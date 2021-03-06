@@ -15,6 +15,7 @@ Scene1::Scene1()
 
 Scene1::~Scene1()
 {
+	//Destructor
 }
 
 void Scene1::Init()
