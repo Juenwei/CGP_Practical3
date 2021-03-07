@@ -129,19 +129,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="JuenGraphics.cpp" />
     <ClCompile Include="JuenInput.cpp" />
     <ClCompile Include="JuenWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene1.cpp" />
+    <ClCompile Include="Scene2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="JuenGraphics.h" />
     <ClInclude Include="JuenInput.h" />
     <ClInclude Include="JuenWindow.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene1.h" />
+    <ClInclude Include="Scene2.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Practical1.rc" />

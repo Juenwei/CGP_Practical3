@@ -11,6 +11,8 @@ Scene1::Scene1()
 	texture2 = NULL;
 	sprite = NULL;
 	backSprite = NULL;
+
+	ZeroMemory(&prev_keyState, sizeof(prev_keyState));
 }
 
 Scene1::~Scene1()
@@ -74,6 +76,18 @@ void Scene1::Update()
 	{
 		std::cout << "DOWN" << std::endl;
 		yPosValue += 3;
+	}
+	else if (myInput->AcceptKeyDown(DIK_F1))
+	{
+		prev_keyState[0] = 1;
+
+	}
+	else if(prev_keyState[0]==1)
+	{
+		prev_keyState[0] = 0;
+		std::cout << "Change Scene" << std::endl;
+		GameStateManager::GetInstance()->ChangeGameState(GameStateManager::SCENE_2);
+
 	}
 	else if (myInput->AcceptKeyDown(DIK_R))
 	{
@@ -143,3 +157,5 @@ void Scene1::Release()
 	texture2->Release();
 	texture2 = NULL;
 }
+
+
