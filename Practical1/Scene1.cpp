@@ -6,12 +6,15 @@ Scene1::Scene1()
 	myGraphics = myGraphics->GetGraphicsInstance();
 	myInput = myInput->GetInputInstance();
 
-	texture = NULL;
-	texture1 = NULL;
-	texture2 = NULL;
-	sprite = NULL;
-	backSprite = NULL;
+	player = new(PlayerController);
 
+	backTexture = NULL;
+	texture1 = NULL;
+	playerTexture = NULL;
+	playerSprite = NULL;
+	backSprite = NULL;
+	characterCurrentFrame = 0;
+	
 	ZeroMemory(&prev_keyState, sizeof(prev_keyState));
 }
 
@@ -22,41 +25,70 @@ Scene1::~Scene1()
 
 void Scene1::Init()
 {
-	 
+	player->PlayerStart();
+	//D3DXCreateSprite(myGraphics->d3dDevice, &playerSprite);
+	D3DXCreateSprite(myGraphics->d3dDevice, &backSprite);
 
-	D3DXCreateSprite(myGraphics->d3dDevice, &sprite);
-	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/bg1.png", &texture);
+	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/sciback1.jpg", &backTexture);
 	//hr = D3DXCreateTextureFromFileEx(/* Your Direct3D device */, "01.bmp", D3DX_DEFAULT, D3DX_DEFAULT, 
 	//									D3DX_DEFAULT, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, 
 	//									D3DX_DEFAULT, D3DX_DEFAULT, D3DCOLOR_XRGB(255, 255, 255), 
 	//									NULL, NULL, &texture);
-
-	D3DXCreateSprite(myGraphics->d3dDevice, &backSprite);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/pointer.png", &texture1);
 
-	D3DXCreateSprite(myGraphics->d3dDevice, &backSprite);
-	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slime.png", &texture2);
+	//D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slime.png", &playerTexture);
 
 
 	spriteRect.left = 0;
 	spriteRect.top = 0;
-	spriteRect.right = 400;
-	spriteRect.bottom = 300;
+	spriteRect.right = 512;
+	spriteRect.bottom = 256;
 
 	pointerRect.left = 0;
 	pointerRect.top = 0;
 	pointerRect.right = 24;
 	pointerRect.bottom = 24;
 
+	/*characterSize.x = 32;
+	characterSize.y = 32;
+
 	characterRect.left = 0;
-	characterRect.top = 0;
-	characterRect.right = 32;
-	characterRect.bottom = 32;
+	characterRect.top = 32;
+	characterRect.right = characterRect.left + characterSize.x;
+	characterRect.bottom = characterRect.top + characterSize.y;*/
+
+
+
+	
 
 }
 
 void Scene1::Update()
 {
+
+
+}
+
+void Scene1::FixedUpdate()
+{
+	RenewInput();
+	player->PlayerAnimation();
+	player->PlayerMovement();
+	//// Texture being used is 64 by 64:
+	//spriteCentre = D3DXVECTOR2(32.0f, 32.0f);
+	//// Screen position of the sprite
+	//trans = D3DXVECTOR2(50.0f, 80.0f);
+	//// Rotate based on the time passed
+	//float rotation = 0;
+	//// Build our matrix to rotate, scale and position our sprite
+	//scaling = D3DXVECTOR2(2.0f, 2.0f);
+	//// out, scaling centre, scaling rotation, scaling, rotation centre, rotation, translation
+	//D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, &spriteCentre, rotation, &trans);
+}
+
+
+void Scene1::RenewInput()
+{/*
 	if (myInput->AcceptKeyDown(DIK_LEFT))
 	{
 		std::cout << "LEFT" << std::endl;
@@ -76,13 +108,15 @@ void Scene1::Update()
 	{
 		std::cout << "DOWN" << std::endl;
 		yPosValue += 3;
-	}
-	else if (myInput->AcceptKeyDown(DIK_F1))
+	}*/
+	player->ReceiveInput();
+
+	if (myInput->AcceptKeyDown(DIK_F1))
 	{
 		prev_keyState[0] = 1;
 
 	}
-	else if(prev_keyState[0]==1)
+	else if (prev_keyState[0] == 1)
 	{
 		prev_keyState[0] = 0;
 		std::cout << "Change Scene" << std::endl;
@@ -122,40 +156,47 @@ void Scene1::Update()
 	}
 }
 
+
 void Scene1::Draw()
 {
-
 	//	Drawing.
 	//	Specify alpha blend will ensure that the sprite will render the background with alpha.
-	sprite->Begin(D3DXSPRITE_ALPHABLEND);
-	sprite->Draw(texture, &spriteRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
-	sprite->End();
-
 	backSprite->Begin(D3DXSPRITE_ALPHABLEND);
+	backSprite->Draw(backTexture, &spriteRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
 	backSprite->Draw(texture1, &pointerRect, NULL, &D3DXVECTOR3(myInput->mousePos.x, myInput->mousePos.y, 0),
 		D3DCOLOR_XRGB(myWindow->rgbValue[0], myWindow->rgbValue[1], myWindow->rgbValue[2]));
-	backSprite->Draw(texture2, &characterRect, NULL, &D3DXVECTOR3(xPosValue, yPosValue, 0), D3DCOLOR_XRGB(255, 255, 255));
-	//std::cout << "Slime pos : ("<<xPosValue<<" , " <<yPosValue<< std::endl;
 	backSprite->End();
+
+
+	player->PlayerRender();
+
+	//playerSprite ->Begin(D3DXSPRITE_ALPHABLEND);
+	//playerSprite->SetTransform(&mat);
+	//playerSprite->Draw(playerTexture, &characterRect, NULL, &D3DXVECTOR3(xPosValue, yPosValue, 0), D3DCOLOR_XRGB(255, 255, 255));
+	////std::cout << "Slime pos : ("<<xPosValue<<" , " <<yPosValue<< std::endl;
+	//playerSprite->End();
 
 }
 
 void Scene1::Release()
 {
-	sprite->Release();
-	sprite = NULL;
+
 
 	backSprite->Release();
 	backSprite = NULL;
 
-	texture->Release();
-	texture = NULL;
+	/*playerSprite->Release();
+	playerSprite = NULL;*/
+
+	backTexture->Release();
+	backTexture = NULL;
 
 	texture1->Release();
 	texture1 = NULL;
 
-	texture2->Release();
-	texture2 = NULL;
+	player->PlayerRelease();
+	/*playerTexture->Release();
+	playerTexture = NULL;*/
 }
 
 

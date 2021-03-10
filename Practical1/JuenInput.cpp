@@ -102,8 +102,8 @@ void JuenInput::UpdateInput()
 	dInputKeyboardDevice->GetDeviceState(256, diKeys);
 	mousePos.x += mouseState.lX;
 	mousePos.x = max(mousePos.x, 0);
-	mousePos.x = min(mousePos.x, 400);
+	mousePos.x = min(mousePos.x, WINSCREEN_WIDTH);
 	mousePos.y += mouseState.lY;
 	mousePos.y = max(mousePos.y, 0);
-	mousePos.y = min(mousePos.y, 300);
+	mousePos.y = min(mousePos.y, WINSCREEN_HEIGHT);
 }

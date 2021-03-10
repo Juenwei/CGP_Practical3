@@ -16,7 +16,9 @@ public:
 
 	void Init();
 	void Update();
+	void FixedUpdate();
 	void Draw();
 	void Release();
+	void RenewInput();
 };
 

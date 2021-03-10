@@ -30,9 +30,21 @@ void Scene2::Update()
 
 	}
 }
+
+void Scene2::FixedUpdate()
+{
+}
+
+
+
 void Scene2::Draw() {
 
 }
 void Scene2::Release() {
 	
+}
+
+void Scene2::RenewInput()
+{
+
 }

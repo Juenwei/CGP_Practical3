@@ -132,8 +132,10 @@
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="JuenGraphics.cpp" />
     <ClCompile Include="JuenInput.cpp" />
+    <ClCompile Include="JuenTimer.cpp" />
     <ClCompile Include="JuenWindow.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="Scene1.cpp" />
     <ClCompile Include="Scene2.cpp" />
   </ItemGroup>
@@ -142,7 +144,9 @@
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="JuenGraphics.h" />
     <ClInclude Include="JuenInput.h" />
+    <ClInclude Include="JuenTimer.h" />
     <ClInclude Include="JuenWindow.h" />
+    <ClInclude Include="PlayerController.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene1.h" />
     <ClInclude Include="Scene2.h" />

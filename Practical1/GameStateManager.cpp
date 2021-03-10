@@ -13,10 +13,15 @@ GameStateManager::GameStateManager()
 	gameStateList.push_back(scene2);
 
 	currentGameState = scene1;
+	myTimer = new(JuenTimer);
+	myTimer->Init(60);
+
 }
 
 GameStateManager::~GameStateManager()
 {
+	delete myTimer;
+	myTimer = NULL;
 	for (int i = 0; i < sizeof(gameStateList); i++)
 	{
 		delete gameStateList[i];
@@ -51,6 +56,12 @@ void GameStateManager::ChangeGameState(int index)
 void GameStateManager::Update()
 {
 	currentGameState->Update();
+	int frameToUpdate = myTimer->FramesToUpdate();
+	for (int i = 0; i < frameToUpdate; i++)
+	{
+		currentGameState->FixedUpdate();
+	}
+
 }
 
 void GameStateManager::Draw()

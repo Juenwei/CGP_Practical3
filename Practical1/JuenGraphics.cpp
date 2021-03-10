@@ -17,8 +17,8 @@ JuenGraphics::JuenGraphics()
 	d3dPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	d3dPP.BackBufferFormat = D3DFMT_X8R8G8B8;
 	d3dPP.BackBufferCount = 1;
-	d3dPP.BackBufferWidth = 400;
-	d3dPP.BackBufferHeight = 300;
+	d3dPP.BackBufferWidth = WINSCREEN_WIDTH;
+	d3dPP.BackBufferHeight = WINSCREEN_HEIGHT;
 	d3dPP.hDeviceWindow = myWindow->GetWindowInstance()->g_hWnd;
 
 	//Initialize window varaible

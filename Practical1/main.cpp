@@ -113,7 +113,6 @@ int main()
 
 		
 		myGameStateManager->Update();
-
 		
 		myGraphics->BeginDraw();
 

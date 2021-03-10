@@ -34,18 +34,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		{
 			SetCursor(LoadCursorFromFile("aero_link_l.cur"));
 		}
-		/*else if (wParam == 82)
-		{
-			myWindow->ChangeRBGValue(myWindow->rgbValue[0], 0);
-		}
-		else if (wParam == 71)
-		{
-			myWindow->ChangeRBGValue(myWindow->rgbValue[1], 1);
-		}
-		else if (wParam == 66)
-		{
-			myWindow->ChangeRBGValue(myWindow->rgbValue[2], 2);
-		}*/
+	
 		else if (wParam == 189)
 		{
 			myWindow->ChangeSpeed(-1);
@@ -74,8 +63,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
 //Static initialization
 int JuenWindow::keyPressed = 0;
-//int JuenWindow::mouseX = 0;
-//int JuenWindow::mouseY = 0;
+
 JuenWindow *JuenWindow::instance = NULL;
 
 JuenWindow::JuenWindow()
@@ -229,7 +217,7 @@ void JuenWindow:: InitializeWindow()
 
 	
 	//	You are to refer to MSDN for each of the parameters details.
-	g_hWnd = CreateWindowEx(0, wndClass.lpszClassName, "JuenWei's Window", WS_OVERLAPPEDWINDOW, 0, 100, 416, 338, NULL, NULL, hInstance, NULL);
+	g_hWnd = CreateWindowEx(0, wndClass.lpszClassName, "JuenWei's Window", WS_OVERLAPPEDWINDOW, 0, 100, WINSCREEN_WIDTH, WINSCREEN_HEIGHT, NULL, NULL, hInstance, NULL);
 	ShowWindow(g_hWnd, 1);
 }
 

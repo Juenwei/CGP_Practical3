@@ -3,7 +3,8 @@
 #include <Windows.h>
 #include <stdio.h>
 #include"resource.h"
-
+#define WINSCREEN_WIDTH 1080
+#define WINSCREEN_HEIGHT 720
 class JuenWindow
 {
 
