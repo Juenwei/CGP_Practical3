@@ -10,8 +10,7 @@ Scene1::Scene1()
 
 	backTexture = NULL;
 	texture1 = NULL;
-	playerTexture = NULL;
-	playerSprite = NULL;
+	
 	backSprite = NULL;
 	characterCurrentFrame = 0;
 	
@@ -164,17 +163,11 @@ void Scene1::Draw()
 	backSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	backSprite->Draw(backTexture, &spriteRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
 	backSprite->Draw(texture1, &pointerRect, NULL, &D3DXVECTOR3(myInput->mousePos.x, myInput->mousePos.y, 0),
-		D3DCOLOR_XRGB(myWindow->rgbValue[0], myWindow->rgbValue[1], myWindow->rgbValue[2]));
+	D3DCOLOR_XRGB(myWindow->rgbValue[0], myWindow->rgbValue[1], myWindow->rgbValue[2]));
 	backSprite->End();
 
 
 	player->PlayerRender();
-
-	//playerSprite ->Begin(D3DXSPRITE_ALPHABLEND);
-	//playerSprite->SetTransform(&mat);
-	//playerSprite->Draw(playerTexture, &characterRect, NULL, &D3DXVECTOR3(xPosValue, yPosValue, 0), D3DCOLOR_XRGB(255, 255, 255));
-	////std::cout << "Slime pos : ("<<xPosValue<<" , " <<yPosValue<< std::endl;
-	//playerSprite->End();
 
 }
 

@@ -14,9 +14,9 @@ private:
 	JuenInput*myInput;
 	PlayerController *player;
 
-	LPDIRECT3DTEXTURE9 backTexture , texture1 , playerTexture;
-	LPD3DXSPRITE playerSprite,backSprite;
-	RECT spriteRect, pointerRect,characterRect;
+	LPDIRECT3DTEXTURE9 backTexture , texture1;
+	LPD3DXSPRITE backSprite;
+	RECT spriteRect, pointerRect;
 	D3DXVECTOR2 characterSize;
 	int characterCurrentFrame;
 
