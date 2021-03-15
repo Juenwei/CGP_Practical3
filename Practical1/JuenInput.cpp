@@ -26,6 +26,7 @@ JuenInput::JuenInput()
 	ZeroMemory(diKeys, sizeof(diKeys));
 	ZeroMemory(&mouseState, sizeof(mouseState));
 	ZeroMemory(&prev_MouseState, sizeof(prev_MouseState));
+	ZeroMemory(&prev_KeyState, sizeof(prev_KeyState));
 }
 
 JuenInput *JuenInput::instance = NULL;
@@ -55,6 +56,12 @@ bool JuenInput::AcceptKeyDown(int index)
 {
 	return diKeys[index] & 0x80;
 }
+
+//bool JuenInput::AcceptKeyUp(int index)
+//{
+//
+//	return false;
+//}
 
 bool JuenInput::AcceptButtonDown(int index)
 {

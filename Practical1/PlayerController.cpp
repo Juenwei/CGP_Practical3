@@ -6,14 +6,21 @@ PlayerController::PlayerController()
 	myInput = myInput->GetInputInstance();
 	playerTexture = NULL;
 	playerSprite = NULL;
+	isPlayerMoving = false;
 	characterCurrentFrame = 0;
 	characterSize.x = 32;
 	characterSize.y = 32;
-	posValue = D3DXVECTOR2(0, 0);
+	sizeRect.top = 0, sizeRect.left = 0, sizeRect.bottom = characterSize.y, sizeRect.right = characterSize.x;
+
+	posValue = D3DXVECTOR2(50, 50);
+	jumpVector = D3DXVECTOR2(0, 0);
+	spriteCentre = D3DXVECTOR2(16.0f, 16.0f);
+	scallingCentre = D3DXVECTOR2(16.0f, 16.0f);
 	playerFaceDirX = 1;
 	animationTimer = 0;
 	animationDuration = 0.5f / 5;
-	speed = 3.5f;
+	speed = 80.0f;
+	adjustedSpeed = speed / 60.0f;
 }
 PlayerController::~PlayerController()
 {
@@ -30,13 +37,14 @@ void PlayerController::PlayerStart()
 }
 void PlayerController::ReceiveInput()
 {
-
+	isPlayerMoving = false;
 	inputAxis = D3DXVECTOR2(0, 0);
 	if (myInput->AcceptKeyDown(DIK_LEFT))
 	{
 		//std::cout << "LEFT" << std::endl;
 		inputAxis.x = -1;
 		playerFaceDirX =-1;
+		isPlayerMoving = true;
 		
 	}
 	else if (myInput->AcceptKeyDown(DIK_RIGHT))
@@ -44,19 +52,34 @@ void PlayerController::ReceiveInput()
 		//std::cout << "RIGHT" << std::endl;
 		inputAxis.x = 1;
 		playerFaceDirX = 1;
-		
+		isPlayerMoving = true;
 	}
 	else if (myInput->AcceptKeyDown(DIK_UP))
 	{
 		//std::cout << "UP1" << std::endl;
 		inputAxis.y = -1;
-		//yPosValue -= 3;
+		isPlayerMoving = true;
 	}
 	else if (myInput->AcceptKeyDown(DIK_DOWN))
 	{
 		//std::cout << "DOWN" << std::endl;
 		inputAxis.y = 1;
-		//yPosValue += 3;
+		isPlayerMoving = true;
+	}
+	else if (myInput->AcceptKeyDown(DIK_SPACE))
+	{
+		myInput->prev_KeyState[DIK_SPACE] = 1;
+	}
+	else if (myInput->prev_KeyState[DIK_SPACE] == 1)
+	{
+		myInput->prev_KeyState[DIK_SPACE] = 0;
+		std::cout << "Space Key Pressed " << std::endl;
+		Jump(speed);
+	}
+	else if (myInput->AcceptKeyDown(DIK_P))
+	{
+		std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
+		
 	}
 	
 	
@@ -64,20 +87,24 @@ void PlayerController::ReceiveInput()
 }
 void PlayerController::PlayerMovement()
 {
-	playerVelocity.x = inputAxis.x*speed;
-	playerVelocity.y = inputAxis.y*speed;
+	playerVelocity = D3DXVECTOR2(0, 0);
+	jumpVector = D3DXVECTOR2(0, 0);
+	if (isPlayerMoving)
+	{
+		playerVelocity = inputAxis * adjustedSpeed;
+		std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
+	}
 
-	posValue.x += playerVelocity.x;
-	posValue.y += playerVelocity.y;
 
-	spriteCentre = D3DXVECTOR2(16.0f, 16.0f);
-	scallingCentre= D3DXVECTOR2(16.0f, 16.0f);
+	jumpVector = PlayJump();
+	posValue+= playerVelocity + jumpVector;
+
+	trans = D3DXVECTOR2(posValue.x, posValue.y);
 	scaling = D3DXVECTOR2(2.0f*playerFaceDirX, 2.0f);
 	float rotation = 0;
-	trans = D3DXVECTOR2(posValue.x, posValue.y);
 	D3DXMatrixTransformation2D(&mat, &scallingCentre, 0.0, &scaling, &spriteCentre, rotation, &trans);
 
-	std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
+	//std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
 	//std::cout << "Scale : (" << scaling.x << " , " << scaling.y << " ) " << std::endl;
 }
 
@@ -86,7 +113,7 @@ void PlayerController::PlayerRender()
 	playerSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	playerSprite->SetTransform(&mat);
 	playerSprite->Draw(playerTexture, &characterRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
-	//std::cout << "Slime pos : ("<<xPosValue<<" , " <<yPosValue<< std::endl;
+
 	playerSprite->End();
 }
 
@@ -119,4 +146,57 @@ void PlayerController::PlayerRelease()
 
 	playerSprite->Release();
 	playerSprite = NULL;
+}
+
+D3DXVECTOR2 PlayerController::GetPlayerPosistion()
+{
+	return D3DXVECTOR2(posValue.x,posValue.y);
+}
+
+RECT PlayerController::GetPlayerRectSize()
+{
+	return sizeRect;
+}
+
+void PlayerController::Jump(float speed)
+{
+	//One time event
+	int counter = 0;
+	D3DXVECTOR2 nextPos, Direction, velocity, gravity;
+	nextPos= D3DXVECTOR2(0, 0);
+	gravity = D3DXVECTOR2(0, 8);
+	Direction = D3DXVECTOR2(5 * adjustedSpeed*playerFaceDirX, -10);
+	velocity = D3DXVECTOR2(1, 1);
+
+	velocity = Direction;
+	for (int i = 0; i < 30; i++)
+	{
+		if (i >= 15)
+		{
+			velocity += gravity;
+		}
+		nextPos += velocity/50;
+		
+		trajecList.push_back(nextPos);
+		std::cout << "Counter : " << counter++ << std::endl;
+	}
+	std::cout << "Jump injected !! " << std::endl;
+}
+
+D3DXVECTOR2 PlayerController::PlayJump()
+{
+	D3DXVECTOR2 nextPos = D3DXVECTOR2(0, 0);
+	if (!trajecList.empty())
+	{
+		std::cout << "Play Jumps !! "<< std::endl;
+		nextPos = trajecList.front();
+		trajecList.pop_front();
+	}
+	return nextPos;
+}
+
+void PlayerController::ResolveCollision()
+{
+	isPlayerMoving = false;
+	posValue -= playerVelocity;
 }

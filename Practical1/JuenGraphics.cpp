@@ -66,7 +66,7 @@ void JuenGraphics ::ReleaseGraphicsInstance()
 
 void JuenGraphics::BeginDraw()
 {
-	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(100,255, 120), 1.0f, 0);
+	d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0,0, 0), 1.0f, 0);
 
 	d3dDevice->BeginScene();
 }

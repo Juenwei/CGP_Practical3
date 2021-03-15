@@ -16,11 +16,13 @@ public:
 	BYTE  diKeys[256];
 	DIMOUSESTATE mouseState;
 	int prev_MouseState[3];
+	int prev_KeyState[256];
 	D3DXVECTOR2 mousePos;
 
 	static JuenInput* GetInputInstance();
 	static void ReleaseInputInstance();
 	bool AcceptKeyDown(int index);
+	//bool AcceptKeyUp(int index);
 	bool AcceptButtonDown(int index);
 	void ReleaseInput();
 	void UpdateInput();

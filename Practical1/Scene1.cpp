@@ -7,6 +7,7 @@ Scene1::Scene1()
 	myInput = myInput->GetInputInstance();
 
 	player = new(PlayerController);
+	mapt = new MapTile(100, 100, 1, 1);
 
 	backTexture = NULL;
 	texture1 = NULL;
@@ -14,7 +15,7 @@ Scene1::Scene1()
 	backSprite = NULL;
 	characterCurrentFrame = 0;
 	
-	ZeroMemory(&prev_keyState, sizeof(prev_keyState));
+	line = NULL;
 }
 
 Scene1::~Scene1()
@@ -25,17 +26,18 @@ Scene1::~Scene1()
 void Scene1::Init()
 {
 	player->PlayerStart();
+	mapt->mapStart();
 	//D3DXCreateSprite(myGraphics->d3dDevice, &playerSprite);
 	D3DXCreateSprite(myGraphics->d3dDevice, &backSprite);
 
-	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/sciback1.jpg", &backTexture);
+	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/sciback.jpg", &backTexture);
 	//hr = D3DXCreateTextureFromFileEx(/* Your Direct3D device */, "01.bmp", D3DX_DEFAULT, D3DX_DEFAULT, 
 	//									D3DX_DEFAULT, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, 
 	//									D3DX_DEFAULT, D3DX_DEFAULT, D3DCOLOR_XRGB(255, 255, 255), 
 	//									NULL, NULL, &texture);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/pointer.png", &texture1);
 
-	//D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slime.png", &playerTexture);
+	D3DXCreateLine(myGraphics->d3dDevice, &line);
 
 
 	spriteRect.left = 0;
@@ -48,14 +50,6 @@ void Scene1::Init()
 	pointerRect.right = 24;
 	pointerRect.bottom = 24;
 
-	/*characterSize.x = 32;
-	characterSize.y = 32;
-
-	characterRect.left = 0;
-	characterRect.top = 32;
-	characterRect.right = characterRect.left + characterSize.x;
-	characterRect.bottom = characterRect.top + characterSize.y;*/
-
 
 
 	
@@ -64,15 +58,22 @@ void Scene1::Init()
 
 void Scene1::Update()
 {
-
+	
 
 }
 
 void Scene1::FixedUpdate()
 {
+
 	RenewInput();
+	if (CheckCollision(player->GetPlayerPosistion(),player->GetPlayerRectSize(),mapt->GetMapPosistion(),mapt->GetMaprRectSize()))
+	{
+		player->ResolveCollision();
+	}
 	player->PlayerAnimation();
 	player->PlayerMovement();
+	//mapt->mapUpdate();
+	
 	//// Texture being used is 64 by 64:
 	//spriteCentre = D3DXVECTOR2(32.0f, 32.0f);
 	//// Screen position of the sprite
@@ -112,12 +113,12 @@ void Scene1::RenewInput()
 
 	if (myInput->AcceptKeyDown(DIK_F1))
 	{
-		prev_keyState[0] = 1;
+		myInput->prev_KeyState[DIK_F1] = 1;
 
 	}
-	else if (prev_keyState[0] == 1)
+	else if (myInput->prev_KeyState[DIK_F1] == 1)
 	{
-		prev_keyState[0] = 0;
+		myInput->prev_KeyState[DIK_F1] = 0;
 		std::cout << "Change Scene" << std::endl;
 		GameStateManager::GetInstance()->ChangeGameState(GameStateManager::SCENE_2);
 
@@ -155,6 +156,43 @@ void Scene1::RenewInput()
 	}
 }
 
+bool Scene1::CheckCollision(D3DXVECTOR2 pos1, RECT rect1, D3DXVECTOR2 pos2, RECT rect2)
+{
+	rect1.right = pos1.x + rect1.right - rect1.left;
+	rect1.left = pos1.x;
+	rect1.bottom = pos1.y + rect1.bottom - rect1.top - 16;
+	rect1.top = pos1.y - 16;
+
+	rect2.right = rect2.right - rect2.left + pos2.x;
+	rect2.left = pos2.x;
+	rect2.bottom = rect2.bottom - rect2.top + pos2.y;
+	rect2.top = pos2.y;
+
+	playerVertices[0] = D3DXVECTOR2(rect1.left, rect1.top);
+	playerVertices[1] = D3DXVECTOR2(rect1.right, rect1.top);
+	playerVertices[2] = D3DXVECTOR2(rect1.right, rect1.bottom);
+	playerVertices[3] = D3DXVECTOR2(rect1.left, rect1.bottom);
+	playerVertices[4] = D3DXVECTOR2(rect1.left, rect1.top);
+
+	mapVertices[0] = D3DXVECTOR2(rect2.left, rect2.top);
+	mapVertices[1] = D3DXVECTOR2(rect2.right, rect2.top);
+	mapVertices[2] = D3DXVECTOR2(rect2.right, rect2.bottom);
+	mapVertices[3] = D3DXVECTOR2(rect2.left, rect2.bottom);
+	mapVertices[4] = D3DXVECTOR2(rect2.left, rect2.top);
+
+	if (rect1.bottom < rect2.top) return false;
+
+	if (rect1.top > rect2.bottom) return false;
+
+	if (rect1.right < rect2.left) return false;
+
+	if (rect1.left > rect2.right) return false;
+
+	std::cout << "Collided" << std::endl;
+
+	return true;
+}
+
 
 void Scene1::Draw()
 {
@@ -166,20 +204,28 @@ void Scene1::Draw()
 	D3DCOLOR_XRGB(myWindow->rgbValue[0], myWindow->rgbValue[1], myWindow->rgbValue[2]));
 	backSprite->End();
 
-
 	player->PlayerRender();
+	mapt->mapRender();
+
+	line->Begin();
+
+	line->Draw(playerVertices, 5, D3DCOLOR_XRGB(100, 255, 120));
+	line->Draw(mapVertices, 5, D3DCOLOR_XRGB(100, 255, 120));
+
+	line->End();
 
 }
 
 void Scene1::Release()
 {
-
-
 	backSprite->Release();
 	backSprite = NULL;
 
 	/*playerSprite->Release();
 	playerSprite = NULL;*/
+
+	line->Release();
+	line = NULL;
 
 	backTexture->Release();
 	backTexture = NULL;
@@ -188,6 +234,7 @@ void Scene1::Release()
 	texture1 = NULL;
 
 	player->PlayerRelease();
+	mapt->mapRelease();
 	/*playerTexture->Release();
 	playerTexture = NULL;*/
 }

@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="mapTile.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="JuenGraphics.cpp" />
     <ClCompile Include="JuenInput.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="Scene2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mapTile.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="JuenGraphics.h" />

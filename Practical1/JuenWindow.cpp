@@ -52,7 +52,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			//myWindow->SetSwitchValue(true);
 		}
 
-		std::cout << wParam << std::endl;
+		//std::cout << wParam << std::endl;
 		break;
 		
 	default:
