@@ -16,10 +16,7 @@ private:
 
 public:
 	static int keyPressed;
-	//static int mouseX, mouseY;
 	bool switchPressed,isWindowed,isCursorShow;
-	int rgbValue[3],speed;
-	//int rValue, gValue, bValue,speed;
 	HWND g_hWnd;
 	MSG msg;
 	JuenWindow();
@@ -34,10 +31,6 @@ public:
 	static JuenWindow* GetWindowInstance();
 	static void ReleaseWindowInstance();
 	void ClientResize(HWND hWnd, int nWidth, int nHeight);
-
-	void ChangeRBGValue(int colorValue,int colorType);
-	void ChangeSpeed(int speedValue);
-	void RandomColor();
 
 	void SetSwitchValue(bool switchValue);
 	bool GetSwitchValue();

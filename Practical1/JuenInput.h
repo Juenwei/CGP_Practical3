@@ -26,6 +26,8 @@ public:
 	bool AcceptButtonDown(int index);
 	void ReleaseInput();
 	void UpdateInput();
+
+	D3DXVECTOR2 getMousePosition();
 	
 };
 

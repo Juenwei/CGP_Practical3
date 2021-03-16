@@ -114,3 +114,8 @@ void JuenInput::UpdateInput()
 	mousePos.y = max(mousePos.y, 0);
 	mousePos.y = min(mousePos.y, WINSCREEN_HEIGHT);
 }
+
+D3DXVECTOR2 JuenInput::getMousePosition()
+{
+	return D3DXVECTOR2(mousePos.x, mousePos.y);
+}

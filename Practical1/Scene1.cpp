@@ -88,27 +88,7 @@ void Scene1::FixedUpdate()
 
 
 void Scene1::RenewInput()
-{/*
-	if (myInput->AcceptKeyDown(DIK_LEFT))
-	{
-		std::cout << "LEFT" << std::endl;
-		xPosValue -= 3;
-	}
-	else if (myInput->AcceptKeyDown(DIK_RIGHT))
-	{
-		std::cout << "RIGHT" << std::endl;
-		xPosValue += 3;
-	}
-	else if (myInput->AcceptKeyDown(DIK_UP))
-	{
-		std::cout << "UP1" << std::endl;
-		yPosValue -= 3;
-	}
-	else if (myInput->AcceptKeyDown(DIK_DOWN))
-	{
-		std::cout << "DOWN" << std::endl;
-		yPosValue += 3;
-	}*/
+{
 	player->ReceiveInput();
 
 	if (myInput->AcceptKeyDown(DIK_F1))
@@ -121,24 +101,6 @@ void Scene1::RenewInput()
 		myInput->prev_KeyState[DIK_F1] = 0;
 		std::cout << "Change Scene" << std::endl;
 		GameStateManager::GetInstance()->ChangeGameState(GameStateManager::SCENE_2);
-
-	}
-	else if (myInput->AcceptKeyDown(DIK_R))
-	{
-		myWindow->ChangeRBGValue(myWindow->rgbValue[0], 0);
-		std::cout << "Current RGB(" << myWindow->rgbValue[0] << " , " << myWindow->rgbValue[1] << " , " << myWindow->rgbValue[2] << " , " << std::endl;
-
-	}
-	else if (myInput->AcceptKeyDown(DIK_G))
-	{
-		myWindow->ChangeRBGValue(myWindow->rgbValue[1], 1);
-		std::cout << "Current RGB(" << myWindow->rgbValue[0] << " , " << myWindow->rgbValue[1] << " , " << myWindow->rgbValue[2] << " , " << std::endl;
-
-	}
-	else if (myInput->AcceptKeyDown(DIK_B))
-	{
-		myWindow->ChangeRBGValue(myWindow->rgbValue[2], 2);
-		std::cout << "Current RGB(" << myWindow->rgbValue[0] << " , " << myWindow->rgbValue[1] << " , " << myWindow->rgbValue[2] << " , " << std::endl;
 
 	}
 	else if (myInput->AcceptButtonDown(0))
@@ -200,8 +162,7 @@ void Scene1::Draw()
 	//	Specify alpha blend will ensure that the sprite will render the background with alpha.
 	backSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	backSprite->Draw(backTexture, &spriteRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
-	backSprite->Draw(texture1, &pointerRect, NULL, &D3DXVECTOR3(myInput->mousePos.x, myInput->mousePos.y, 0),
-	D3DCOLOR_XRGB(myWindow->rgbValue[0], myWindow->rgbValue[1], myWindow->rgbValue[2]));
+	backSprite->Draw(texture1, &pointerRect, NULL, &D3DXVECTOR3(myInput->mousePos.x, myInput->mousePos.y, 0),D3DCOLOR_XRGB(255, 255, 255));
 	backSprite->End();
 
 	player->PlayerRender();

@@ -68,7 +68,7 @@ void PlayerController::ReceiveInput()
 		inputAxis.y = 1;
 		isPlayerMoving = true;
 	}
-	else if (myInput->AcceptKeyDown(DIK_SPACE))
+	/*else if (myInput->AcceptKeyDown(DIK_SPACE))
 	{
 		myInput->prev_KeyState[DIK_SPACE] = 1;
 	}
@@ -77,11 +77,22 @@ void PlayerController::ReceiveInput()
 		myInput->prev_KeyState[DIK_SPACE] = 0;
 		std::cout << "Space Key Pressed " << std::endl;
 		Jump(speed);
-	}
+	}*/
 	else if (myInput->AcceptKeyDown(DIK_P))
 	{
 		std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
 		
+	}
+	else if (myInput->AcceptButtonDown(1))
+	{
+		calNorDirection(trans,myInput->getMousePosition());
+		myInput->prev_MouseState[1] = 1;
+	}
+	else if (myInput->prev_MouseState[1] == 1)
+	{
+		myInput->prev_MouseState[1] = 0;
+		std::cout << "Space Key Pressed " << std::endl;
+		Jump(speed);
 	}
 	
 	
@@ -150,6 +161,20 @@ void PlayerController::PlayerRelease()
 	playerSprite = NULL;
 }
 
+void PlayerController::calNorDirection(D3DXVECTOR2 fromP, D3DXVECTOR2 toP)
+{
+	D3DXVECTOR2 dir,norDir;
+	long int mag;
+
+	dir = toP - fromP;
+	//mag = D3DXVec2LengthSq(&dir);
+	D3DXVec2Normalize(&norDir, &dir);
+	normDirectV = norDir;
+	//std::cout << "Magnitude : " << mag << std::endl;
+	//std::cout << "Normalized vector X : " << norDir.x << "Normalized vector Y : " << norDir.y << std::endl;
+	
+}
+
 D3DXVECTOR2 PlayerController::GetPlayerPosistion()
 {
 	//return D3DXVECTOR2(posValue.x + characterCentre.x, posValue.y + characterCentre.y);
@@ -170,13 +195,11 @@ void PlayerController::Jump(float speed)
 {
 	//One time event
 	int counter = 0;
-	D3DXVECTOR2 nextPos, Direction, velocity, gravity;
+	D3DXVECTOR2 nextPos,velocity, gravity;
 	nextPos= D3DXVECTOR2(0, 0);
 	gravity = D3DXVECTOR2(0, 8);
-	Direction = D3DXVECTOR2(5 * adjustedSpeed*playerFaceDirX, -10);
-	velocity = D3DXVECTOR2(1, 1);
 
-	velocity = Direction;
+	velocity = D3DXVECTOR2(normDirectV.x * 30.0f, normDirectV.y * 25.0f);
 	for (int i = 0; i < 30; i++)
 	{
 		if (i >= 15)

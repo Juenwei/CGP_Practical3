@@ -34,25 +34,10 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		{
 			SetCursor(LoadCursorFromFile("aero_link_l.cur"));
 		}
-	
-		else if (wParam == 189)
-		{
-			myWindow->ChangeSpeed(-1);
-		}
-		else if (wParam == 187)
-		{
-			myWindow->ChangeSpeed(1);
-		}
-		else if(wParam == 81)
-		{
-			myWindow->RandomColor();
-		}
 		else if(wParam == 69)
 		{
 			//myWindow->SetSwitchValue(true);
 		}
-
-		//std::cout << wParam << std::endl;
 		break;
 		
 	default:
@@ -71,12 +56,7 @@ JuenWindow::JuenWindow()
 	
 	hInstance = GetModuleHandle(NULL);
 	g_hWnd = NULL;
-	rgbValue[0] = 255;
-	rgbValue[1] = 255;
-	rgbValue[2] = 255;
-	
 	isCursorShow = true;
-	speed = 2;
 	switchPressed = false;
     keyPressed = 0;
 }
@@ -106,37 +86,6 @@ void JuenWindow ::ReleaseWindowInstance()
 	
 }
 
-void JuenWindow::ChangeRBGValue(int colorValue, int colorType)
-{
-	if (colorValue > 255)
-		colorValue = 0;
-	else
-	{
-		colorValue+=speed;
-	}
-	rgbValue[colorType] = colorValue;
-}
-
-void JuenWindow::ChangeSpeed(int speedValue)
-{
-	if (speed >= 0&&speed<10&&speedValue>0)
-	{
-		speed += speedValue;
-	}
-	else if (speed > 0 && speed <= 10 && speedValue<0)
-	{
-		speed += speedValue;
-	}
-}
-
-void JuenWindow::RandomColor()
-{
-	
-	for (int i = 0; i < 2; i++)
-	{
-		rgbValue[i] = rand() % 255;
-	}
-}
 
 void JuenWindow::SetSwitchValue(bool switchValue)
 {

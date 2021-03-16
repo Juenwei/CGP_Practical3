@@ -27,7 +27,7 @@ private:
 
 	D3DXVECTOR3 characterCentre;
 	D3DXVECTOR2 trans, scaling;
-	D3DXVECTOR2 inputAxis , playerVelocity ,jumpVector, posValue;
+	D3DXVECTOR2 inputAxis, playerVelocity, jumpVector, posValue, normDirectV;
 	D3DXMATRIX mat;
 	int playerFaceDirX;
 	float adjustedSpeed,speed;
@@ -43,12 +43,12 @@ public:
 	void PlayerRender();
 	void PlayerAnimation();
 	void PlayerRelease();
+	void calNorDirection(D3DXVECTOR2 fromP, D3DXVECTOR2 toP);
 
 	D3DXVECTOR2 GetPlayerPosistion();
 	D3DXVECTOR3 GetPlayerCentre();
 	RECT GetPlayerRectSize();
 	
-
 	void Jump(float speed);
 	D3DXVECTOR2 PlayJump();
 	void ResolveCollision();
