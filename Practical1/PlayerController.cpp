@@ -10,12 +10,11 @@ PlayerController::PlayerController()
 	characterCurrentFrame = 0;
 	characterSize.x = 32;
 	characterSize.y = 32;
-	sizeRect.top = 0, sizeRect.left = 0, sizeRect.bottom = characterSize.y, sizeRect.right = characterSize.x;
+	colliderSizeRect.top = 0, colliderSizeRect.left = 0, colliderSizeRect.bottom = 26, colliderSizeRect.right = 32;
 
-	posValue = D3DXVECTOR2(50, 50);
+	posValue = D3DXVECTOR2(0, 0);
 	jumpVector = D3DXVECTOR2(0, 0);
-	spriteCentre = D3DXVECTOR2(16.0f, 16.0f);
-	scallingCentre = D3DXVECTOR2(16.0f, 16.0f);
+	characterCentre = D3DXVECTOR3(16.0f, 8.0f, 0.0f);
 	playerFaceDirX = 1;
 	animationTimer = 0;
 	animationDuration = 0.5f / 5;
@@ -30,10 +29,10 @@ void PlayerController::PlayerStart()
 {
 	D3DXCreateSprite(myGraphics->d3dDevice, &playerSprite);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slime.png", &playerTexture);
-	characterRect.left = 0;
-	characterRect.top = 32;
-	characterRect.right = characterRect.left + characterSize.x;
-	characterRect.bottom = characterRect.top + characterSize.y;
+	/*spriteCutRect.left = 0;
+	spriteCutRect.top = 32;
+	spriteCutRect.right = spriteCutRect.left + characterSize.x;
+	spriteCutRect.bottom = spriteCutRect.top + characterSize.y;*/
 }
 void PlayerController::ReceiveInput()
 {
@@ -102,7 +101,7 @@ void PlayerController::PlayerMovement()
 	trans = D3DXVECTOR2(posValue.x, posValue.y);
 	scaling = D3DXVECTOR2(2.0f*playerFaceDirX, 2.0f);
 	float rotation = 0;
-	D3DXMatrixTransformation2D(&mat, &scallingCentre, 0.0, &scaling, &spriteCentre, rotation, &trans);
+	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, NULL, rotation, &trans);
 
 	//std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
 	//std::cout << "Scale : (" << scaling.x << " , " << scaling.y << " ) " << std::endl;
@@ -112,7 +111,7 @@ void PlayerController::PlayerRender()
 {
 	playerSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	playerSprite->SetTransform(&mat);
-	playerSprite->Draw(playerTexture, &characterRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
+	playerSprite->Draw(playerTexture, &spriteCutRect, &characterCentre, NULL, D3DCOLOR_XRGB(255, 255, 255));
 
 	playerSprite->End();
 }
@@ -128,10 +127,10 @@ void PlayerController::PlayerAnimation()
 	}
 	
 	//Update animation
-	characterRect.left = characterSize.x*characterCurrentFrame;
-	characterRect.top = 32;
-	characterRect.right = characterRect.left + characterSize.x;
-	characterRect.bottom = 64;
+	spriteCutRect.left = characterSize.x*characterCurrentFrame;
+	spriteCutRect.top = 32;
+	spriteCutRect.right = spriteCutRect.left + characterSize.x;
+	spriteCutRect.bottom = 64;
 
 	//std::cout << "CF : " << characterCurrentFrame << std::endl;
 	//std::cout << "RECT X : " << characterRect.left << " , " << characterRect.right << std::endl;
@@ -150,12 +149,18 @@ void PlayerController::PlayerRelease()
 
 D3DXVECTOR2 PlayerController::GetPlayerPosistion()
 {
-	return D3DXVECTOR2(posValue.x,posValue.y);
+	//return D3DXVECTOR2(posValue.x + characterCentre.x, posValue.y + characterCentre.y);
+	return D3DXVECTOR2(posValue.x, posValue.y);
+}
+
+D3DXVECTOR3 PlayerController::GetPlayerCentre()
+{
+	return characterCentre;
 }
 
 RECT PlayerController::GetPlayerRectSize()
 {
-	return sizeRect;
+	return colliderSizeRect;
 }
 
 void PlayerController::Jump(float speed)

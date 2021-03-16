@@ -19,13 +19,14 @@ private:
 
 	LPDIRECT3DTEXTURE9 playerTexture;
 	LPD3DXSPRITE playerSprite;
-	RECT characterRect;
-	RECT sizeRect;
+	RECT spriteCutRect;
+	RECT colliderSizeRect;
 	D3DXVECTOR2 characterSize;
 	int characterCurrentFrame;
 	std::list<D3DXVECTOR2> trajecList;
 
-	D3DXVECTOR2 trans, spriteCentre, scaling, scallingCentre;
+	D3DXVECTOR3 characterCentre;
+	D3DXVECTOR2 trans, scaling;
 	D3DXVECTOR2 inputAxis , playerVelocity ,jumpVector, posValue;
 	D3DXMATRIX mat;
 	int playerFaceDirX;
@@ -44,6 +45,7 @@ public:
 	void PlayerRelease();
 
 	D3DXVECTOR2 GetPlayerPosistion();
+	D3DXVECTOR3 GetPlayerCentre();
 	RECT GetPlayerRectSize();
 	
 

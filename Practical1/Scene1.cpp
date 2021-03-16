@@ -7,7 +7,7 @@ Scene1::Scene1()
 	myInput = myInput->GetInputInstance();
 
 	player = new(PlayerController);
-	mapt = new MapTile(100, 100, 1, 1);
+	mapt = new MapTile(D3DXVECTOR2(100.0f, 100.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f,32.0f));
 
 	backTexture = NULL;
 	texture1 = NULL;
@@ -158,15 +158,15 @@ void Scene1::RenewInput()
 
 bool Scene1::CheckCollision(D3DXVECTOR2 pos1, RECT rect1, D3DXVECTOR2 pos2, RECT rect2)
 {
-	rect1.right = pos1.x + rect1.right - rect1.left;
-	rect1.left = pos1.x;
-	rect1.bottom = pos1.y + rect1.bottom - rect1.top - 16;
-	rect1.top = pos1.y - 16;
+	rect1.right = pos1.x + rect1.right - rect1.left-player->GetPlayerCentre().x;
+	rect1.left = pos1.x - player->GetPlayerCentre().x;
+	rect1.bottom = pos1.y + rect1.bottom - rect1.top - player->GetPlayerCentre().y;
+	rect1.top = pos1.y - player->GetPlayerCentre().y;
 
-	rect2.right = rect2.right - rect2.left + pos2.x;
-	rect2.left = pos2.x;
-	rect2.bottom = rect2.bottom - rect2.top + pos2.y;
-	rect2.top = pos2.y;
+	rect2.right = rect2.right - rect2.left + pos2.x-mapt->GetMapTileCentre().x;
+	rect2.left = pos2.x - mapt->GetMapTileCentre().x;
+	rect2.bottom = rect2.bottom - rect2.top + pos2.y - mapt->GetMapTileCentre().y;
+	rect2.top = pos2.y - mapt->GetMapTileCentre().y;
 
 	playerVertices[0] = D3DXVECTOR2(rect1.left, rect1.top);
 	playerVertices[1] = D3DXVECTOR2(rect1.right, rect1.top);
