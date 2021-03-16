@@ -1,6 +1,6 @@
 #include "PlayerController.h"
 
-PlayerController::PlayerController()
+PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTOR2 size, float speed)
 {
 	myGraphics = myGraphics->GetGraphicsInstance();
 	myInput = myInput->GetInputInstance();
@@ -8,18 +8,21 @@ PlayerController::PlayerController()
 	playerSprite = NULL;
 	isPlayerMoving = false;
 	characterCurrentFrame = 0;
-	characterSize.x = 32;
-	characterSize.y = 32;
-	colliderSizeRect.top = 0, colliderSizeRect.left = 0, colliderSizeRect.bottom = 26, colliderSizeRect.right = 32;
+	characterSize.x = size.x;
+	characterSize.y = size.y;
+	scaleFactor.x = scale.x;
+	scaleFactor.y = scale.y;
+	colliderSizeRect.top = 0, colliderSizeRect.left = 0, colliderSizeRect.bottom = 26, colliderSizeRect.right = size.x;
 
-	posValue = D3DXVECTOR2(0, 0);
+	
+	posValue = D3DXVECTOR2(pos.x, pos.y);
 	jumpVector = D3DXVECTOR2(0, 0);
-	characterCentre = D3DXVECTOR3(16.0f, 8.0f, 0.0f);
+	characterCentre = D3DXVECTOR3(size.x / 2, size.y / 4, 0.0f);
 	playerFaceDirX = 1;
 	animationTimer = 0;
 	animationDuration = 0.5f / 5;
-	speed = 80.0f;
-	adjustedSpeed = speed / 60.0f;
+	this->speed = speed;
+	adjustedSpeed = this->speed / 60.0f;
 }
 PlayerController::~PlayerController()
 {
@@ -99,7 +102,7 @@ void PlayerController::PlayerMovement()
 	posValue+= playerVelocity + jumpVector;
 
 	trans = D3DXVECTOR2(posValue.x, posValue.y);
-	scaling = D3DXVECTOR2(2.0f*playerFaceDirX, 2.0f);
+	scaling = D3DXVECTOR2(scaleFactor.x*playerFaceDirX, scaleFactor.y);
 	float rotation = 0;
 	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, NULL, rotation, &trans);
 

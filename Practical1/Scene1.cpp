@@ -6,7 +6,7 @@ Scene1::Scene1()
 	myGraphics = myGraphics->GetGraphicsInstance();
 	myInput = myInput->GetInputInstance();
 
-	player = new(PlayerController);
+	player = new PlayerController(D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(2.0f, 2.0f), D3DXVECTOR2(32.0f, 32.0f), 60.0f);
 	mapt = new MapTile(D3DXVECTOR2(100.0f, 100.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f,32.0f));
 
 	backTexture = NULL;

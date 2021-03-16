@@ -21,7 +21,7 @@ private:
 	LPD3DXSPRITE playerSprite;
 	RECT spriteCutRect;
 	RECT colliderSizeRect;
-	D3DXVECTOR2 characterSize;
+	D3DXVECTOR2 characterSize, scaleFactor;
 	int characterCurrentFrame;
 	std::list<D3DXVECTOR2> trajecList;
 
@@ -35,7 +35,7 @@ private:
 
 	//D3DXVECTOR2 position;
 public:
-	PlayerController();
+	PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTOR2 size, float speed);
 	~PlayerController();
 	void PlayerStart();
 	void ReceiveInput();
