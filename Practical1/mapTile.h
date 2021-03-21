@@ -1,34 +1,41 @@
 #pragma once
 #include"JuenGraphics.h"
 #include"JuenWindow.h"
-#include"JuenInput.h"
+#include"CollisionManager.h"
 class MapTile
 {
 private:
 	JuenGraphics *myGraphics;
-	JuenInput*myInput;
+	//CollisionManager *mapCollider;
 	
-	LPDIRECT3DTEXTURE9 tileTexture, dotTexture;
 	LPD3DXSPRITE tileSprite, dotSprite;
-	RECT mapTileRect,mapColliderRect;
-	D3DXVECTOR2 mapTileSize;
-
-	D3DXVECTOR2 mapTileTrans, scaling, dotTrans;
+	LPDIRECT3DTEXTURE9 tileTexture, dotTexture;
+	LPD3DXLINE mapLine;
+	//Preset first then use dynamic array with pointer
+	float rotation;
+	D3DXVECTOR2 mapTileTrans, mapTileScale, dotTrans;
 	D3DXVECTOR3 mapCentre, dotCentre;
-	
-	D3DXMATRIX mat,dotMat;
+	D3DXMATRIX mapTileMat,dotMat;
+	//Cutting Rect
+	RECT mapTileCuttingRect; 
+	//Collider Rect
+	RECT oriColliderRect , mapColliderRect;
+	//Collider Line , predefined first , one collider have 5 array value
+	D3DXVECTOR2 mapTilePointArray[5];
 
 
 public:
-	MapTile(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTOR2 size);
+	MapTile(D3DXVECTOR2 pos , D3DXVECTOR2 scale, D3DXVECTOR2 cuttingSpritesize);
 	~MapTile();
 	void mapStart();
 	void mapUpdate();
 	void mapRender();
 	void mapRelease();
+	void mapCollision();
 
+	//Getter & Setter
+	RECT getCollisionRect();
 	D3DXVECTOR2 GetMapPosistion();
-	RECT GetMaprRectSize();
 	D3DXVECTOR3 GetMapTileCentre();
 
 };

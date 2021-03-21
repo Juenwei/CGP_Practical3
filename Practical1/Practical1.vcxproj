@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="mapTile.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="JuenGraphics.cpp" />
@@ -141,6 +142,7 @@
     <ClCompile Include="Scene2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="mapTile.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
