@@ -1,6 +1,6 @@
 #include "CollisionManager.h"
 
-
+//
 RECT CollisionManager::CalculateCollision(D3DXVECTOR2 pos, RECT rect, D3DXVECTOR2 centrePos)
 {
 	rect.right = pos.x + rect.right - rect.left - centrePos.x;
@@ -21,7 +21,7 @@ bool CollisionManager::CheckCollision(RECT rect1, RECT rect2)
 
 	if (rect1.left > rect2.right) return false;
 
-	std::cout << "Collided" << std::endl;
+	//std::cout << "Collided" << std::endl;
 
 	return true;
 }
@@ -48,4 +48,27 @@ void CollisionManager::releaseColliderBox(LPD3DXLINE line)
 {
 	line->Release();
 	line = NULL;
+}
+
+int CollisionManager::checkSideOfCollider(D3DXVECTOR2 pos1, D3DXVECTOR2 pos2)
+{
+	//(Pos1 -> Pos2 )vector
+	D3DXVECTOR2 offset = pos2 - pos1;
+	D3DXVec2Normalize(&offset, &offset);
+
+	if (abs(offset.x)>abs(offset.y))
+	{
+		if (offset.x > 0)
+			return 4;
+		else
+			return 3;
+	}
+	else
+	{
+		if (offset.y > 0)
+			return 2;
+		else
+			return 1;
+	}
+	return 0;
 }

@@ -27,5 +27,7 @@ public:
 	void ChangeGameState(int index);
 	void Update();
 	void Draw();
+
+	//Scene1* getScene1Pointer();
 };
 

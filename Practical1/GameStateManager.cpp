@@ -68,4 +68,3 @@ void GameStateManager::Draw()
 {
 	currentGameState->Draw();
 }
-

@@ -12,5 +12,6 @@ public:
 	static void setCollisionBox(D3DXVECTOR2 posArray[], RECT rect);
 	static void drawColliderBox(LPD3DXLINE line, D3DXVECTOR2 posArray[5]);
 	static void releaseColliderBox(LPD3DXLINE line);
+	static int checkSideOfCollider(D3DXVECTOR2 pos1, D3DXVECTOR2 pos2);
 };
 

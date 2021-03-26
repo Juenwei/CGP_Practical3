@@ -105,7 +105,7 @@ RECT MapTile::getCollisionRect()
 
 D3DXVECTOR2 MapTile::GetMapPosistion()
 {
-	return D3DXVECTOR2(mapTileTrans.x,mapTileTrans.y);
+	return mapTileTrans;
 }
 
 D3DXVECTOR3 MapTile::GetMapTileCentre()

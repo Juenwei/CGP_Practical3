@@ -5,19 +5,34 @@ Scene1::Scene1()
 	myWindow = myWindow->GetWindowInstance();
 	myGraphics = myGraphics->GetGraphicsInstance();
 	myInput = myInput->GetInputInstance();
-	//mycollision = new CollisionManager;
 
 	myPlayer = myPlayer->GetPlayerInstance();
+	myPlayer->setScenePointer(this);
 
-	MapTile *maptile = new MapTile(D3DXVECTOR2(50.0f, 50.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
-	MapTile *maptile1 = new MapTile(D3DXVECTOR2(50.0f, 200.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
+	//Need to delete ? 
+	MapTile *maptile = new MapTile(D3DXVECTOR2(300.0f, 600.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
+	MapTile *maptile1 = new MapTile(D3DXVECTOR2(100.0f, 500.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
+	//MapTile *maptile2 = new MapTile(D3DXVECTOR2(300.0f, 500.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
+
 	mapTileList.push_back(maptile);
 	mapTileList.push_back(maptile1);
+	//mapTileList.push_back(maptile2);
+
+	mapTileAmount = mapTileList.size();
 
 	backTexture = NULL;
 	texture1 = NULL;
-	
+	testIndex = 1;
 	backSprite = NULL;
+	trajectSprite = NULL;
+	gravity = D3DXVECTOR2(0.0f, 10.0f);
+	trajDotCenter = D3DXVECTOR3(16.0f, 16.0f, 0.0f);
+	dotCuttingRect.top = 0;
+	dotCuttingRect.left = 0;
+	dotCuttingRect.bottom = 32;
+	dotCuttingRect.right = 32;
+	angleWithinRange = false;
+	vOffsetDirection = D3DXVECTOR2(0, 0);
 }
 
 Scene1::~Scene1()
@@ -27,16 +42,20 @@ Scene1::~Scene1()
 
 void Scene1::Init()
 {
+	
 	myPlayer->PlayerStart();
-	//std::cout << "Size of Init : " << sizeof(mapTileList) << std::endl;
-	for (int i = 0; i < 2; i++)
+	//std::cout << "Size of Init : " << mapTileList.size() << std::endl;
+	for (int i = 0; i < mapTileAmount; i++)
 	{
 		mapTileList[i]->mapStart();
 	}
 	
 	D3DXCreateSprite(myGraphics->d3dDevice, &backSprite);
+	D3DXCreateSprite(myGraphics->d3dDevice, &trajectSprite);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/sciback.jpg", &backTexture);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/pointer.png", &texture1);
+	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slimeTraject.png", &trajectDotTex);
+	//D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/enemyRobot.png", &enemyTex);
 
 
 	spriteRect.left = 0;
@@ -57,26 +76,16 @@ void Scene1::Init()
 
 void Scene1::Update()
 {
-	
-
+	RenewInput();
 }
 
 void Scene1::FixedUpdate()
 {
+	testIndex += 1;
+	myPlayer->setIsApplyGravity(true);
 
-	RenewInput();
-	for (int i = 0; i <2; i++)
-	{
-		if (mycollision->CheckCollision(myPlayer->getCalculateCollision(), mapTileList[i]->getCollisionRect()))
-		{
-			myPlayer->ResolveCollision();
-		}
-	}
-
-	
 	myPlayer->PlayerAnimation();
 	myPlayer->PlayerMovement();
-	//mapt->mapUpdate();
 	
 }
 
@@ -97,74 +106,128 @@ void Scene1::RenewInput()
 		GameStateManager::GetInstance()->ChangeGameState(GameStateManager::SCENE_2);
 
 	}
-	else if (myInput->AcceptButtonDown(1))
-	{
-		myPlayer->calNorDirection(myPlayer->playerTrans, myInput->getMousePosition());
-		myInput->prev_MouseState[1] = 1;
-	}
-	else if (myInput->prev_MouseState[1] == 1)
-	{
-		myInput->prev_MouseState[1] = 0;
-		std::cout << "Space Key Pressed " << std::endl;
-		playerJump();
-	}
-}
-
-void Scene1::playerJump()
-{
-	//One time event
-	myPlayer->isPlayerMoving = true;
-	int counter = 0;
-	D3DXVECTOR2 nextVelocity, vOffset, gravity;
-	D3DXVECTOR2 estimatedPlayerPos = myPlayer->GetPlayerPosistion();
-	gravity = D3DXVECTOR2(0, 8);
-	if (myPlayer->normDirectV.x >= 0)
-		myPlayer->playerFaceDirX = 1;
-	else
-		myPlayer->playerFaceDirX = -1;
-	vOffset = D3DXVECTOR2(myPlayer->normDirectV.x * 150.0f, myPlayer->normDirectV.y * 150.0f);
-	bool continueCalculate = true;
-	for (int i = 0; i < 30; i++)
-	{
 	
-		nextVelocity = D3DXVECTOR2(0, 0);
-		if (i >= 13)
-		{
-			vOffset += gravity;
-		}
-		nextVelocity += vOffset / 30;
-		//Check if next posistion with rect collided , if collide cut down the for loop , break 
-		for (int i = 0; i < 2; i++)
-		{
-			if (CollisionManager::CheckCollision(myPlayer->setCalculateCollision(estimatedPlayerPos), mapTileList[i]->getCollisionRect()))
-			{
-				continueCalculate = false;
-				std::cout << "STOP LOOPING !! " << std::endl;
-			}
-
-		}
-
-		if (continueCalculate)
-		{
-			estimatedPlayerPos += nextVelocity;
-			std::cout << "Push next pos : ( " << estimatedPlayerPos.x << " , " << estimatedPlayerPos.y << " ) " << std::endl;
-			myPlayer->trajecList.push_back(nextVelocity);
-		}
-		else
-		{
-			break;
-		}
-		std::cout << "Counter : " << counter++ << std::endl;
-	}
 }
 
-//MapTile * Scene1::getAllMapTileColllider(int index)
+bool isPlayerStop = true;
+
+//void Scene1::playerJump()
 //{
-//	//return mapTileList[index];
-//	//return maptArray[index];
+//	//One time event
+//	myPlayer->isPlayerMoving = true;
+//	int counter = 0;
+//	D3DXVECTOR2 gV = D3DXVECTOR2(0.0f, 0.0f);
+//	estimatedPlayerPos = myPlayer->GetPlayerPosistion();
+//	if (myPlayer->normDirectV.x >= 0)
+//		myPlayer->playerFaceDirX = 1;
+//	else
+//		myPlayer->playerFaceDirX = -1;
+//	vOffsetDirection = D3DXVECTOR2(myPlayer->normDirectV.x * 250.0f, myPlayer->normDirectV.y *150.0f);
+//	bool continueCalculate = true;
+//	myPlayer->setIsApplyGravity(false);
+//	for (int i = 0; i < 60; i++)
+//	{
+//		vOffsetDirection.x *= 0.97f;
+//		nextVelocity = D3DXVECTOR2(0, 0);
+//		if (i > 29)
+//		{
+//			//myPlayer->setIsApplyGravity(true);
+//			gV = D3DXVECTOR2(0, 15.0f);
+//			vOffsetDirection += gV;
+//		}
+//		nextVelocity += (vOffsetDirection)/30;
+//		estimatedPlayerPos += nextVelocity;
+//		for (int x = 0; x < mapTileAmount; x++)
+//		{
+//			if (CollisionManager::CheckCollision(myPlayer->setCalculateCollision(estimatedPlayerPos), mapTileList[x]->getCollisionRect()) || estimatedPlayerPos.y > 700)
+//			{
+//				continueCalculate = false;
+//				break;
+//			}
+//
+//		}
+//
+//		if (continueCalculate)
+//		{
+//			//std::cout << "Push next pos : ( " << estimatedPlayerPos.x << " , " << estimatedPlayerPos.y << " ) " << std::endl;
+//			myPlayer->trajecList.push_back(nextVelocity);
+//
+//		}
+//		else
+//		{
+//			break;
+//		}
+//	}
+//	
+//	
 //}
 
+//Give up method 
+//int Scene1::displayTrajectLine(D3DXVECTOR2 vOffsetDirection)
+//{
+//	int estimatedIndex = 0;
+//	bool continueCalculate = true;
+//	estimatedPlayerPos = myPlayer->GetPlayerPosistion();
+//	for (int i = 0; i < 60; i++)
+//	{
+//		nextVelocity = D3DXVECTOR2(0, 0);
+//		nextVelocity += vOffsetDirection;
+//		for (int x = 0; x < mapTileAmount; x++)
+//		{
+//			if (CollisionManager::CheckCollision(myPlayer->setCalculateCollision(estimatedPlayerPos), mapTileList[x]->getCollisionRect()) || estimatedPlayerPos.y > 700)
+//			{
+//				continueCalculate = false;
+//				break;
+//			}
+//		}
+//
+//		if (continueCalculate)
+//		{
+//			estimatedPlayerPos += nextVelocity;
+//			if (i % 5 == 0)
+//			{
+//				trajectSprite->Begin(D3DXSPRITE_ALPHABLEND);
+//				trajectSprite->Draw(trajectDotTex, &dotCuttingRect, &trajDotCenter, &D3DXVECTOR3(estimatedPlayerPos.x, estimatedPlayerPos.y, 0.0f), D3DCOLOR_XRGB(255, 255, 255));
+//				trajectSprite->End();
+//			}
+//
+//		}
+//		else
+//		{
+//			estimatedIndex = i;
+//			break;
+//		}
+//		estimatedIndex ++;
+//	}
+//	//Decide how many time loop 
+//	return estimatedIndex;
+//
+//}
 
+void Scene1::ChangePlayerState(int playerStateIndex)
+{
+
+}
+
+D3DXVECTOR2 Scene1::getGravity()
+{
+	return gravity;
+}
+
+MapTile * Scene1::getMapTilePointer(int index)
+{
+	return mapTileList[index];
+}
+
+int Scene1::getSizeOfMapTileList()
+{
+	return mapTileList.size();
+}
+
+int Scene1::getTestIndex()
+{
+	return testIndex;
+}
 
 void Scene1::Draw()
 {
@@ -173,37 +236,41 @@ void Scene1::Draw()
 	backSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	backSprite->Draw(backTexture, &spriteRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
 	backSprite->Draw(texture1, &pointerRect, NULL, &D3DXVECTOR3(myInput->mousePos.x, myInput->mousePos.y, 0),D3DCOLOR_XRGB(255, 255, 255));
+	//backSprite->Draw(enemyTex, NULL, NULL, &D3DXVECTOR3(0.0f, 0.0f, 0), D3DCOLOR_XRGB(255, 255, 255));
 	backSprite->End();
-	/*for (int i = 0; i < sizeof(maptArray); i++)
-	{
-		maptArray[i]->mapRender();
-	}*/
+
 	
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < mapTileAmount; i++)
 	{
 		mapTileList[i]->mapRender();
 	}
 	myPlayer->PlayerRender();
 
 
-
 }
 
 void Scene1::Release()
 {
-	delete mycollision;
-	mycollision = NULL;
 
-	backSprite->Release();
-	backSprite = NULL;
+	trajectDotTex->Release();
+	trajectDotTex = NULL;
 
 	backTexture->Release();
 	backTexture = NULL;
 
+	//enemyTex->Release();
+	//enemyTex = NULL;
+
 	texture1->Release();
 	texture1 = NULL;
 
-	for (int i = 0; i < 2; i++)
+	trajectSprite->Release();
+	trajectSprite = NULL;
+
+	backSprite->Release();
+	backSprite = NULL;
+
+	for (int i = 0; i < mapTileAmount; i++)
 	{
 		mapTileList[i]->mapRelease();
 	}

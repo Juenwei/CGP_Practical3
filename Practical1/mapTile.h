@@ -8,6 +8,12 @@ private:
 	JuenGraphics *myGraphics;
 	//CollisionManager *mapCollider;
 	
+	enum MapTileType
+	{
+		verticalType,
+		horizontalType
+	};
+
 	LPD3DXSPRITE tileSprite, dotSprite;
 	LPDIRECT3DTEXTURE9 tileTexture, dotTexture;
 	LPD3DXLINE mapLine;

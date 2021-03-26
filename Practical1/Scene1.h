@@ -8,6 +8,8 @@
 #include"mapTile.h"
 #include<vector>
 
+class PlayerController;
+
 class Scene1:public GameState
 {
 private:
@@ -16,18 +18,25 @@ private:
 	JuenInput*myInput;
 
 	PlayerController *myPlayer;
-	CollisionManager *mycollision;
-	//MapTile *maptArray[2];
 	std::vector<MapTile*>mapTileList;
+	int mapTileAmount;
 
-	LPDIRECT3DTEXTURE9 backTexture , texture1;
-	LPD3DXSPRITE backSprite;
-	RECT spriteRect, pointerRect;
+	LPDIRECT3DTEXTURE9 backTexture, texture1, trajectDotTex;// enemyTex;
+	LPD3DXSPRITE backSprite , trajectSprite;
+	RECT spriteRect, pointerRect , dotCuttingRect;
 
 	D3DXVECTOR2 trans, spriteCentre;
 	D3DXVECTOR3 scaling;
 	D3DXMATRIX mat;
 
+	D3DXVECTOR2 nextVelocity, vOffsetDirection, gravity;
+	D3DXVECTOR2 estimatedPlayerPos;
+
+	D3DXVECTOR3 trajDotCenter;
+	bool angleWithinRange;
+
+	int testIndex;
+	int loopIndex=0;
 public:
 	Scene1();
 	~Scene1();
@@ -40,12 +49,15 @@ public:
 	void Draw();
 	void Release();
 	void RenewInput();
+	
+	//Trajectory
+	void ChangePlayerState(int playerStateIndex);
 
-	//Return one pointer but control by index
-	//MapTile* getAllMapTileColllider(int index);
-	void playerJump();
-
-
-	//bool CheckCollision(D3DXVECTOR2 pos1, RECT rect1, D3DXVECTOR2 pos2, RECT rect2);
+	//Getter & Setter
+	D3DXVECTOR2 getGravity();
+	MapTile* getMapTilePointer(int index);
+	int getSizeOfMapTileList();
+	
+	int getTestIndex();
 };
 
