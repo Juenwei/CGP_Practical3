@@ -18,16 +18,18 @@ private:
 	enum PlayerStatus
 	{
 		groundState,
-		wallState, //0
+		wallState,
 	}currentPStatus;
 
 	struct PStatus {
-		float spriteRotationRadian;
-		int moveDikIndex;
-		float minAngleClamp, maxAngleClamp;
-		RECT colliderRect;
+		//float spriteRotationRadian;
+		int AngleClameType;
+		//float minAngleClamp, maxAngleClamp;
+		RECT colliderRect[2];
+		D3DXVECTOR2 colliderSidePoint[4];
 	};
 
+	int tempPlayerStateIndex = 0;
 
 	//Basic Sprite Setting
 	LPDIRECT3DTEXTURE9 playerTexture,trajectDotTex;
@@ -38,11 +40,12 @@ private:
 	D3DXVECTOR3 characterCentre, trajDotCenter;
 	D3DXVECTOR2 scaling;
 	float rotation;
+	float minAngleClamp, maxAngleClamp;
 
 	//Movement Setting
 	D3DXVECTOR2 inputAxis, prev_PlayerVelocity, playerMoveVelocity, playerPosValue;
 	D3DXMATRIX mat;
-	float adjustedSpeed,speed;
+	float speed;
 
 	//Animation Setting
 	int characterCurrentFrame;
@@ -52,9 +55,10 @@ private:
 	RECT oriSizeRect, colliderSizeRect;
 	D3DXVECTOR2 playerPointArray[5];
 
-	RECT oriSizeRect2, colliderSizeRect2;
+	RECT oriSizeOuterRect2, colliderSizeRect2;
 	D3DXVECTOR2 playerPointArray2[5];
-	D3DXVECTOR3 rect2Center;
+	D3DXVECTOR3 outerColliderRect2Center;
+
 
 	//Constructor
 	PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTOR2 size, float speed);
@@ -70,7 +74,7 @@ public:
 
 	//Condition & State
 	bool isReleasedKey;
-	bool isPlayerMoving;
+	bool isMoveKeyPressed;
 	bool isPlayerFalling;
 	bool isPlayerCollided;
 	bool isShowingTrajectDot;
@@ -98,7 +102,7 @@ public:
 	void ResolveCollision(RECT colliderRect);
 
 	//ChangeState method
-	void ChangePlayerState(int targetState);
+	void ChangePlayerState(PlayerStatus targetState, float rotation, int mixAngle, int maxAngle);
 
 	//Getter & Setter
 	D3DXVECTOR2 GetPlayerPosistion();

@@ -35,11 +35,11 @@ void CollisionManager::setCollisionBox(D3DXVECTOR2 posArray[], RECT rect)
 	posArray[4] = D3DXVECTOR2(rect.left, rect.top);
 }
 
-void CollisionManager::drawColliderBox(LPD3DXLINE line, D3DXVECTOR2 posArray[5])
+void CollisionManager::drawColliderBox(LPD3DXLINE line, D3DXVECTOR2 posArray[5], int drawAmount)
 {
 	line->Begin();
 
-	line->Draw(posArray, 5, D3DCOLOR_XRGB(100, 255, 120));
+	line->Draw(posArray, drawAmount, D3DCOLOR_XRGB(100, 255, 120));
 
 	line->End();
 }
@@ -50,25 +50,40 @@ void CollisionManager::releaseColliderBox(LPD3DXLINE line)
 	line = NULL;
 }
 
-int CollisionManager::checkSideOfCollider(D3DXVECTOR2 pos1, D3DXVECTOR2 pos2)
-{
-	//(Pos1 -> Pos2 )vector
-	D3DXVECTOR2 offset = pos2 - pos1;
-	D3DXVec2Normalize(&offset, &offset);
 
-	if (abs(offset.x)>abs(offset.y))
+
+int CollisionManager::checkSideOfCollider(D3DXVECTOR2 targetObjectPos[4], D3DXVECTOR2 otherObjectPos[4],RECT otherObjectRect)
+{
+	//std::cout << "Player Left Point X : " << targetObjectPos[leftPoint].x << "Maptile Left Point X : " << otherObjectPos[leftPoint].x << std::endl;
+	if (targetObjectPos[topPoint].y < otherObjectPos[topPoint].y && targetObjectPos[leftPoint].x >= otherObjectRect.left && targetObjectPos[rightPoint].x <= otherObjectRect.right)
 	{
-		if (offset.x > 0)
-			return 4;
-		else
-			return 3;
+		std::cout << "Player On top" << std::endl;
+		return 1;
 	}
-	else
+	//If(playerTop .y >= colliderTop.y && playerRight.x < colliderLeft.x )return PlayerOnleft
+	else if (targetObjectPos[leftPoint].x < otherObjectPos[leftPoint].x&&targetObjectPos[rightPoint].x < otherObjectPos[rightPoint].x)
 	{
-		if (offset.y > 0)
-			return 2;
-		else
-			return 1;
+		std::cout << "Player On Left" << std::endl;
+		return 2;
 	}
-	return 0;
+	else if (targetObjectPos[rightPoint].x > otherObjectPos[rightPoint].x&&targetObjectPos[leftPoint].x > otherObjectPos[leftPoint].x)
+	{
+		std::cout << "Player On Right" << std::endl;
+		return 3;
+	}
+	else 
+		return 0;
+}
+
+void CollisionManager::calculateSideOfCollision(D3DXVECTOR2 sidePointArray[4], RECT currentColliderRect)
+{
+	
+	//Top Point , Y axis fixed (top)
+	sidePointArray[topPoint] = D3DXVECTOR2((currentColliderRect.left + currentColliderRect.right) / 2, currentColliderRect.top);
+	//Left Point , X axis fixed (left)
+	sidePointArray[leftPoint] = D3DXVECTOR2(currentColliderRect.left, (currentColliderRect.top + currentColliderRect.bottom) / 2);
+	//Bottom Point , Y axis fixed (bottom)
+	sidePointArray[bottomPoint] = D3DXVECTOR2((currentColliderRect.left + currentColliderRect.right) / 2, currentColliderRect.bottom);
+	//Right Point , X axis fixed (right)
+	sidePointArray[rightPoint] = D3DXVECTOR2(currentColliderRect.right, (currentColliderRect.top + currentColliderRect.bottom) / 2);
 }

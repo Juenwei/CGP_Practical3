@@ -8,24 +8,29 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 	myInput = myInput->GetInputInstance();
 
 	//Ground State 
-	pStateType[groundState].colliderRect.top = 0;
-	pStateType[groundState].colliderRect.left = 0;
-	pStateType[groundState].colliderRect.bottom = 26;
-	pStateType[groundState].colliderRect.right = 32;
-	pStateType[groundState].spriteRotationRadian = 0.0f;
-	pStateType[groundState].moveDikIndex = groundState;
-	pStateType[groundState].minAngleClamp = -10;
-	pStateType[groundState].maxAngleClamp = -170;
+	pStateType[groundState].colliderRect[0].top = 0;
+	pStateType[groundState].colliderRect[0].left = 0;
+	pStateType[groundState].colliderRect[0].bottom = 26;
+	pStateType[groundState].colliderRect[0].right = 32;
+	pStateType[groundState].colliderRect[1].top = 0;
+	pStateType[groundState].colliderRect[1].left = 0;
+	pStateType[groundState].colliderRect[1].bottom = 38;
+	pStateType[groundState].colliderRect[1].right = 38;
+	pStateType[groundState].AngleClameType = 1;
 
-	//Wall State
-	pStateType[wallState].colliderRect.top = 0;
-	pStateType[wallState].colliderRect.left = 0;
-	pStateType[wallState].colliderRect.bottom = 32;
-	pStateType[wallState].colliderRect.right = 26;
-	pStateType[wallState].spriteRotationRadian = 1.5f;
-	pStateType[wallState].moveDikIndex = groundState;
-	pStateType[wallState].minAngleClamp = -10;
-	pStateType[wallState].maxAngleClamp = -170;
+	//Wall State Left
+	pStateType[wallState].colliderRect[0].top = 0;
+	pStateType[wallState].colliderRect[0].left = 0;
+	pStateType[wallState].colliderRect[0].bottom = 32;
+	pStateType[wallState].colliderRect[0].right = 26;
+	pStateType[wallState].colliderRect[1].top = 0;
+	pStateType[wallState].colliderRect[1].left = 0;
+	pStateType[wallState].colliderRect[1].bottom = 38;
+	pStateType[wallState].colliderRect[1].right = 38;
+	pStateType[wallState].AngleClameType = 0;
+
+	//Set Current states
+	currentPStatus = groundState;
 
 	//Sprite & Animation
 	playerTexture = NULL;
@@ -35,12 +40,14 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 	characterSize.y = size.y;
 	scaleFactor.x = scale.x;
 	scaleFactor.y = scale.y;
-	characterCentre = D3DXVECTOR3(size.x / 2, size.y / 4, 0.0f);
-	rect2Center = D3DXVECTOR3(characterCentre.x + 3, characterCentre.y + 2.0f, 0.0f);
+	characterCentre = D3DXVECTOR3(size.x / 2, size.y / 4, 0.0f);//X : 16 , Y : 8
 	playerFaceDirX = 1;
 	animationTimer = 0;
 	animationDuration = 0.5f / 5;
+	//rotation = pStateType[currentPStatus].spriteRotationRadian;
 	rotation = 0.0f;
+	minAngleClamp = 0;
+	maxAngleClamp = 0;
 
 	//TrajectSprite
 	trajectDotTex = NULL;
@@ -56,36 +63,30 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 	totalVelocity = D3DXVECTOR2(0, 0);
 	playerPosValue = D3DXVECTOR2(pos.x, pos.y);
 	this->speed = speed;
-	//adjustedSpeed = this->speed / 60.0f;
-
-
 
 	//State
-	isPlayerMoving = false;
+	isMoveKeyPressed = false;
 	isReleasedKey = false;
 	isPlayerFalling = true;
 	isPlayerCollided = false;
 	isShowingTrajectDot = false;
-	currentPStatus = groundState;
-
-	/*struct PStatus {
-		float spriteRotationAngle;
-		int moveDikIndex;
-		float minAngleClamp, maxAngleClamp;
-		RECT colliderRect;
-	};*/
 
 	//Collider
 	for (int i = 0; i < 5; i++)
 	{
 		playerPointArray[i] = D3DXVECTOR2(0, 0);
-		playerPointArray2[i] = D3DXVECTOR2(0, 0);;
+		playerPointArray2[i] = D3DXVECTOR2(0, 0);
+
 	}
-	oriSizeRect.top = pStateType[groundState].colliderRect.top;
-	oriSizeRect.left = pStateType[groundState].colliderRect.left;
-	oriSizeRect.bottom = pStateType[groundState].colliderRect.bottom;
-	oriSizeRect.right = pStateType[groundState].colliderRect.right;
-	oriSizeRect2.top = 0, oriSizeRect2.left = 0, oriSizeRect2.bottom = 32, oriSizeRect2.right = 38;
+
+	for (int i = 0; i < 4; i++)
+	{
+		pStateType[groundState].colliderSidePoint[i] = D3DXVECTOR2(0, 0);
+		pStateType[wallState].colliderSidePoint[i] = D3DXVECTOR2(0, 0);
+	}
+	oriSizeRect = pStateType[currentPStatus].colliderRect[0];
+	oriSizeOuterRect2 = pStateType[currentPStatus].colliderRect[1];
+	outerColliderRect2Center = D3DXVECTOR3(characterCentre.x + 3, characterCentre.y + 2.0f, 0.0f);
 
 }
 
@@ -102,7 +103,6 @@ PlayerController *PlayerController::GetPlayerInstance()
 	if (!instance)
 	{
 		instance = new PlayerController(D3DXVECTOR2(500.0f, 400.0f), D3DXVECTOR2(2.0f, 2.0f), D3DXVECTOR2(32.0f, 32.0f), 100.0f);
-
 	}
 	return instance;
 }
@@ -131,67 +131,125 @@ void PlayerController::PlayerStart()
 
 void PlayerController::ReceiveInput()
 {
-	isPlayerMoving = false;
+	isMoveKeyPressed = false;
 	inputAxis = D3DXVECTOR2(0, 0);
-	//jumpVelocity = D3DXVECTOR2(0, 0);
-	if (myInput->AcceptKeyDown(DIK_LEFT))
+	
+	if (currentPStatus == groundState)
 	{
-		//std::cout << "LEFT" << std::endl;
-		inputAxis.x = -1;
-		playerFaceDirX =-1;
-		isPlayerMoving = true;
-		myInput->prev_KeyState[DIK_LEFT] = 1;
-	}
-	else if (myInput->prev_KeyState[DIK_LEFT] == 1)
-	{
-		myInput->prev_KeyState[DIK_LEFT] = 0;
-		//isPlayerMoving = false;
+		if (myInput->AcceptKeyDown(DIK_LEFT))
+		{
+			//std::cout << "LEFT" << std::endl;
+			inputAxis.x = -1;
+			playerFaceDirX = -1;
+			isMoveKeyPressed = true;
+			myInput->prev_KeyState[DIK_LEFT] = 1;
+		}
+		else if (myInput->prev_KeyState[DIK_LEFT] == 1)
+		{
+			myInput->prev_KeyState[DIK_LEFT] = 0;
+			//isPlayerMoving = false;
 
-	}
-	if (myInput->AcceptKeyDown(DIK_RIGHT))
-	{
-		//std::cout << "RIGHT" << std::endl;
-		inputAxis.x = 1;
-		playerFaceDirX = 1;
-		isPlayerMoving = true;
-		myInput->prev_KeyState[DIK_LEFT] = 1;
-	}
-	else if (myInput->prev_KeyState[DIK_RIGHT] == 1)
-	{
-		myInput->prev_KeyState[DIK_RIGHT] = 0;
-		//isPlayerMoving = false;
+		}
+		if (myInput->AcceptKeyDown(DIK_RIGHT))
+		{
+			//std::cout << "RIGHT" << std::endl;
+			inputAxis.x = 1;
+			playerFaceDirX = 1;
+			isMoveKeyPressed = true;
+			myInput->prev_KeyState[DIK_LEFT] = 1;
+		}
+		else if (myInput->prev_KeyState[DIK_RIGHT] == 1)
+		{
+			myInput->prev_KeyState[DIK_RIGHT] = 0;
+			//isPlayerMoving = false;
 
+		}
 	}
-	if (myInput->AcceptKeyDown(DIK_UP))
+	else if (currentPStatus == wallState)
 	{
-		myInput->prev_KeyState[DIK_UP] = 1;
-	}
-	else if (myInput->prev_KeyState[DIK_UP] == 1)
-	{
-		myInput->prev_KeyState[DIK_UP] = 0;
-		rotation += 0.1f;
-		std::cout << "Current Rotation : " << rotation << std::endl;
+		if (myInput->AcceptKeyDown(DIK_UP))
+		{
+			inputAxis.y = -1;
+			playerFaceDirX = -1 * (rotation / abs(rotation));
+			isMoveKeyPressed = true;
+			myInput->prev_KeyState[DIK_UP] = 1;
+		}
+		else if (myInput->prev_KeyState[DIK_UP] == 1)
+		{
+			myInput->prev_KeyState[DIK_UP] = 0;
+			//rotation += 0.1f;
+			//std::cout << "Current Rotation : " << rotation << std::endl;
 
-	}
-	if (myInput->AcceptKeyDown(DIK_DOWN))
-	{
-		myInput->prev_KeyState[DIK_DOWN] = 1;
-	}
-	else if (myInput->prev_KeyState[DIK_DOWN] == 1)
-	{
-		myInput->prev_KeyState[DIK_DOWN] = 0;
-		rotation -= 0.1f;
-		std::cout << "Current Rotation : " << rotation << std::endl;
+		}
+		if (myInput->AcceptKeyDown(DIK_DOWN))
+		{
+			inputAxis.y = 1;
+			playerFaceDirX = 1 * (rotation / abs(rotation));
+			isMoveKeyPressed = true;
+			myInput->prev_KeyState[DIK_DOWN] = 1;
+		}
+		else if (myInput->prev_KeyState[DIK_DOWN] == 1)
+		{
+			myInput->prev_KeyState[DIK_DOWN] = 0;
+			//rotation -= 0.1f;
+			//std::cout << "Current Rotation : " << rotation << std::endl;
 
+		}
 	}
+	
 	if (myInput->AcceptKeyDown(DIK_P))
 	{
+		myInput->prev_KeyState[DIK_P] = 1;
 		//std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
-		std::cout << "Scene 1 test value " << sceneInstance->getTestIndex() << std::endl;
 	}
+	else if (myInput->prev_KeyState[DIK_P] == 1)
+	{
+		myInput->prev_KeyState[DIK_P] = 0;
+		tempPlayerStateIndex++;
+		if (tempPlayerStateIndex > 3)
+			tempPlayerStateIndex = 0;
+		if (tempPlayerStateIndex == 0)
+		{
+			ChangePlayerState(groundState, 0.0f, -10, -170);
+			std::cout << "Swtiching to ground state" << std::endl;
+		}
+		else if (tempPlayerStateIndex == 1)
+		{
+			ChangePlayerState(wallState, 4.7f, -10, -170);
+			std::cout << "Swtiching to wall state left" << std::endl;
+		}
+		else
+		{
+			ChangePlayerState(wallState, 1.5f, 80, -80);
+			std::cout << "Swtiching to wall state right" << std::endl;
+		}
+
+	}
+	//if (myInput->AcceptKeyDown(DIK_W))
+	//{
+	//	myInput->prev_KeyState[DIK_W] = 1;
+	//}
+	//else if (myInput->prev_KeyState[DIK_W] == 1)
+	//{
+	//	myInput->prev_KeyState[DIK_W] = 0;
+	//	rotation += 0.1f;
+	//	std::cout << "Current Rotation : " << rotation << std::endl;
+	//}
+	//if (myInput->AcceptKeyDown(DIK_S))
+	//{
+	//	myInput->prev_KeyState[DIK_S] = 1;
+	//}
+	//else if (myInput->prev_KeyState[DIK_S] == 1)
+	//{
+	//	myInput->prev_KeyState[DIK_S] = 0;
+	//	rotation -= 0.1f;
+	//	std::cout << "Current Rotation : " << rotation << std::endl;
+	//}
+
 	if (myInput->AcceptButtonDown(1))
 	{
 		calNorDirection(GetPlayerPosistion(), myInput->getMousePosition());
+		//std::cout << "Angle : " << trajectoryAngleClamp() << std::endl;
 		if (trajectoryAngleClamp()&& totalVelocity.y == 0)
 		{
 			isShowingTrajectDot = true;
@@ -215,7 +273,8 @@ void PlayerController::ReceiveInput()
 
 void PlayerController::PlayerMovement()
 {
-	//std::cout << " Is player move : " << isPlayerMoving << std::endl;
+	//std::cout << " Is player move : " << isMoveKeyPressed << std::endl;
+	//std::cout << " Is player Collided : " << isPlayerCollided<< std::endl;
 	CollisionManager::setCollisionBox(playerPointArray, setCalculatePlayerCollision());
 	CollisionManager::setCollisionBox(playerPointArray2, colliderSizeRect2);
 	for (int i = 0; i < sceneInstance->getSizeOfMapTileList(); i++)
@@ -224,10 +283,32 @@ void PlayerController::PlayerMovement()
 
 		if (CollisionManager::CheckCollision(setCalculatePlayerCollision(), tempMapRect))
 		{
+			//Collided
+			//Calculate Player
+			CollisionManager::calculateSideOfCollision(pStateType[currentPStatus].colliderSidePoint, colliderSizeRect);
+			int tempIndex = CollisionManager::checkSideOfCollider(pStateType[currentPStatus].colliderSidePoint, sceneInstance->getMapTilePointer(i)->mapSideCenterPoint, tempMapRect);
+			//Check Side
+			if (tempIndex == 1)
+			{
+				std::cout << "Switch to ground state" << std::endl;
+				ChangePlayerState(groundState, 0.0f, -10, -170);
+			}
+			else if(tempIndex ==2)
+			{
+				std::cout << "Switch to wall state Left" << std::endl;
+				pStateType[wallState].AngleClameType = tempIndex;
+				ChangePlayerState(wallState, -1.5f, 100,-100);
+			}
+			else if (tempIndex == 3)
+			{
+				std::cout << "Switch to wall state Right" << std::endl;
+				pStateType[wallState].AngleClameType = tempIndex;
+				ChangePlayerState(wallState, 1.5f, 80, -80);
+			}
 			ResolveCollision(sceneInstance->getMapTilePointer(i)->getCollisionRect());
 		}
 		//Loop until last no collision
-		colliderSizeRect2 = CollisionManager::CalculateCollision(playerPosValue, oriSizeRect2, D3DXVECTOR2(rect2Center.x, rect2Center.y));
+		colliderSizeRect2 = CollisionManager::CalculateCollision(playerPosValue, oriSizeOuterRect2, D3DXVECTOR2(outerColliderRect2Center.x, outerColliderRect2Center.y));
 		if (CollisionManager::CheckCollision(colliderSizeRect2, tempMapRect))
 		{
 			//std::cout << "Outer collider Collided" << std::endl;
@@ -241,18 +322,16 @@ void PlayerController::PlayerMovement()
 		}
 	}
 
-	if (isPlayerMoving&&totalVelocity.y==0)
+	//Plus is Collided while implement
+	if (isMoveKeyPressed&&isPlayerCollided)
 	{
 		playerMoveVelocity = inputAxis * speed;
-	
 	}
 	else
 	{
 		playerMoveVelocity = D3DXVECTOR2(0, 0);
 	}
 	
-	//New MEthod
-	//std::cout << "JUMP VEL : " << " ( " << totalVelocity.x << " , " << totalVelocity.y << " ) " << std::endl;
 	//Speed Clamping
 	if (abs(totalVelocity.x) > 100)
 	{
@@ -261,7 +340,8 @@ void PlayerController::PlayerMovement()
 	
 	playerPosValue += (totalVelocity + playerMoveVelocity )/ 60.0f;
 
-	if (playerPosValue.y <= 600)
+	//Clamp for map boundary
+	if (playerPosValue.y <= 900)
 	{
 		totalVelocity.y += falling().y;
 	}
@@ -270,6 +350,7 @@ void PlayerController::PlayerMovement()
 		totalVelocity = D3DXVECTOR2(0, 0);
 		playerPosValue.y = 600;
 	}
+
 	if (playerMoveVelocity != D3DXVECTOR2(0, 0)|| totalVelocity != D3DXVECTOR2(0, 0))
 	{
 		prev_PlayerVelocity = playerMoveVelocity + totalVelocity;
@@ -288,20 +369,26 @@ void PlayerController::PlayerRender()
 	playerSprite->Draw(playerTexture, &spriteCutRect, &characterCentre, NULL, D3DCOLOR_XRGB(255, 255, 255));
 	
 	playerSprite->End();
-	CollisionManager::drawColliderBox(playerLine, playerPointArray);
-	CollisionManager::drawColliderBox(playerLine, playerPointArray2);
+	CollisionManager::drawColliderBox(playerLine, playerPointArray,5);
+	CollisionManager::drawColliderBox(playerLine, playerPointArray2,5);
+
+	//CollisionManager::calculateSideOfCollision(pStateType[currentPStatus].colliderSidePoint, colliderSizeRect);
+	//CollisionManager::drawColliderBox(playerLine, pStateType[currentPStatus].colliderSidePoint, 4);
 	if (isShowingTrajectDot)
 	{
 		trajectSprite->Begin(D3DXSPRITE_ALPHABLEND);
+		calNorDirection(GetPlayerPosistion(), myInput->getMousePosition());
 		D3DXVECTOR2 tempVelocity = normDirectV * 500;
 		D3DXVECTOR2 tempPosistion = playerPosValue;
-		for (int i = 0; i < 60; i++)
+		for (int i = 0; i < 120; i++)
 		{
 			
 			tempPosistion += (tempVelocity / 60.0f);
 			tempVelocity.y += 10;
+			//Speed Clamping
 			if (abs(tempVelocity.x) > 100)
 			{
+				//MIN(MAX)
 				tempVelocity.x = (tempVelocity.x / abs(tempVelocity.x)) * 100;
 			}
 			if (i % 5 == 0)
@@ -315,9 +402,6 @@ void PlayerController::PlayerRender()
 		}
 		trajectSprite->End();
 	}
-	
-
-
 }
 
 void PlayerController::PlayerAnimation()
@@ -356,8 +440,6 @@ void PlayerController::PlayerRelease()
 
 	playerSprite->Release();
 	playerSprite = NULL;
-
-
 }
 
 void PlayerController::calNorDirection(D3DXVECTOR2 fromP, D3DXVECTOR2 toP)
@@ -376,26 +458,48 @@ bool PlayerController::trajectoryAngleClamp()
 {
 	float angle;
 	angle = atan2(normDirectV.y, normDirectV.x) / 3.142 * 180;
-	if (angle <= -10 && angle >= -170)
+	std::cout << "Angle : " << angle << std::endl;
+	if (currentPStatus == groundState)
 	{
-		return true;
+		if (angle <= minAngleClamp && angle >= maxAngleClamp)
+		{
+			return true;
 
+		}
+		else
+		{
+			//std::cout << "Angle : " << angle << "  Not Within the range from : " << minAngleClamp << "  to : " << maxAngleClamp << std::endl;
+			return false;
+		}
 	}
 	else
 	{
-		return false;
+		if (pStateType[wallState].AngleClameType == 2)
+		{
+			if (abs(angle) > minAngleClamp)
+			{
+				std::cout << "Angle for Left" << std::endl;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if (abs(angle) < minAngleClamp)
+			{
+				std::cout << "Angle for Right" << std::endl;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 
-}
-
-D3DXVECTOR2 PlayerController::GetPlayerPosistion()
-{
-	return playerPosValue;
-}
-
-D3DXVECTOR3 PlayerController::GetPlayerCentre()
-{
-	return characterCentre;
 }
 
 //D3DXVECTOR2 PlayerController::PlayJump()
@@ -421,8 +525,6 @@ D3DXVECTOR2 PlayerController::falling()
 	D3DXVECTOR2 fallVector = D3DXVECTOR2(0.0f, 0.0f);
 	if (!isPlayerCollided)
 	{
-
-		//D3DXVECTOR2(prev_PlayerVelocity.x, 0.0f)
 		fallVector = (sceneInstance->getGravity());
 		return fallVector;
 	}
@@ -435,11 +537,12 @@ D3DXVECTOR2 PlayerController::falling()
 
 void PlayerController::playerJumpVer2()
 {
-	isPlayerMoving = true;
+	isMoveKeyPressed = true;
 	if (normDirectV.x >= 0)
 		playerFaceDirX = 1;
 	else
 		playerFaceDirX = -1;
+	rotation = 0.0f;
 	totalVelocity = normDirectV * 500;
 	std::cout << "JUMP VEL : " << " ( " << normDirectV.x << " , " << normDirectV.y << " ) " << std::endl;
 
@@ -448,13 +551,34 @@ void PlayerController::playerJumpVer2()
 
 void PlayerController::ResolveCollision(RECT colliderRect)
 {
-	isPlayerMoving = false;
+	isMoveKeyPressed = false;
 	
 	//Reset velocity , and resolve player pos to the y axis of collider 
 	totalVelocity = D3DXVECTOR2(0.0f, 0.0f);
-	playerPosValue -= (prev_PlayerVelocity/60);
+	playerPosValue -= (prev_PlayerVelocity/100);
+	//playerPosValue.x += (prev_PlayerVelocity.x/ 100);
 
 	std::cout << "Resolving (" << prev_PlayerVelocity.x << " , " << prev_PlayerVelocity.y << " ) " << std::endl;
+}
+
+void PlayerController::ChangePlayerState(PlayerStatus targetState, float rotationRad, int minAngle, int maxAngle)
+{
+	currentPStatus = targetState;
+	oriSizeRect = pStateType[currentPStatus].colliderRect[0];
+	oriSizeOuterRect2 = pStateType[currentPStatus].colliderRect[1];
+	rotation = rotationRad;
+	minAngleClamp = minAngle;
+	maxAngleClamp = maxAngle;
+}
+
+D3DXVECTOR2 PlayerController::GetPlayerPosistion()
+{
+	return playerPosValue;
+}
+
+D3DXVECTOR3 PlayerController::GetPlayerCentre()
+{
+	return characterCentre;
 }
 
 RECT PlayerController::setCalculatePlayerCollision()

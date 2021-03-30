@@ -9,14 +9,17 @@ Scene1::Scene1()
 	myPlayer = myPlayer->GetPlayerInstance();
 	myPlayer->setScenePointer(this);
 
-	//Need to delete ? 
-	MapTile *maptile = new MapTile(D3DXVECTOR2(300.0f, 600.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
-	MapTile *maptile1 = new MapTile(D3DXVECTOR2(100.0f, 500.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
-	//MapTile *maptile2 = new MapTile(D3DXVECTOR2(300.0f, 500.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(128.0f, 32.0f));
+	//Delete once use new 
+	MapTile *maptile = new MapTile(D3DXVECTOR2(550.0f, 700.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(1024.0f, 64.0f),0.0f);//9 tiles
+	maptile->settingGeneratePoint(9, D3DXVECTOR2(128.0f, 0.0f), D3DXVECTOR2(32.0f, 660.0f));
+	MapTile *maptile1 = new MapTile(D3DXVECTOR2(0.0f, 350.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(64.0f, 768.0f), 1.57f);
+	maptile1->settingGeneratePoint(6, D3DXVECTOR2(0.0f, 128.0f), D3DXVECTOR2(32.0f, 0.0f));
+	MapTile *maptile2 = new MapTile(D3DXVECTOR2(1100.0f, 350.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXVECTOR2(64.0f, 768.0f), -1.57f);
+	maptile2->settingGeneratePoint(6, D3DXVECTOR2(0.0f, 128.0f), D3DXVECTOR2(1066.0f, 128.0f));
 
 	mapTileList.push_back(maptile);
 	mapTileList.push_back(maptile1);
-	//mapTileList.push_back(maptile2);
+	mapTileList.push_back(maptile2);
 
 	mapTileAmount = mapTileList.size();
 
@@ -109,100 +112,6 @@ void Scene1::RenewInput()
 	
 }
 
-bool isPlayerStop = true;
-
-//void Scene1::playerJump()
-//{
-//	//One time event
-//	myPlayer->isPlayerMoving = true;
-//	int counter = 0;
-//	D3DXVECTOR2 gV = D3DXVECTOR2(0.0f, 0.0f);
-//	estimatedPlayerPos = myPlayer->GetPlayerPosistion();
-//	if (myPlayer->normDirectV.x >= 0)
-//		myPlayer->playerFaceDirX = 1;
-//	else
-//		myPlayer->playerFaceDirX = -1;
-//	vOffsetDirection = D3DXVECTOR2(myPlayer->normDirectV.x * 250.0f, myPlayer->normDirectV.y *150.0f);
-//	bool continueCalculate = true;
-//	myPlayer->setIsApplyGravity(false);
-//	for (int i = 0; i < 60; i++)
-//	{
-//		vOffsetDirection.x *= 0.97f;
-//		nextVelocity = D3DXVECTOR2(0, 0);
-//		if (i > 29)
-//		{
-//			//myPlayer->setIsApplyGravity(true);
-//			gV = D3DXVECTOR2(0, 15.0f);
-//			vOffsetDirection += gV;
-//		}
-//		nextVelocity += (vOffsetDirection)/30;
-//		estimatedPlayerPos += nextVelocity;
-//		for (int x = 0; x < mapTileAmount; x++)
-//		{
-//			if (CollisionManager::CheckCollision(myPlayer->setCalculateCollision(estimatedPlayerPos), mapTileList[x]->getCollisionRect()) || estimatedPlayerPos.y > 700)
-//			{
-//				continueCalculate = false;
-//				break;
-//			}
-//
-//		}
-//
-//		if (continueCalculate)
-//		{
-//			//std::cout << "Push next pos : ( " << estimatedPlayerPos.x << " , " << estimatedPlayerPos.y << " ) " << std::endl;
-//			myPlayer->trajecList.push_back(nextVelocity);
-//
-//		}
-//		else
-//		{
-//			break;
-//		}
-//	}
-//	
-//	
-//}
-
-//Give up method 
-//int Scene1::displayTrajectLine(D3DXVECTOR2 vOffsetDirection)
-//{
-//	int estimatedIndex = 0;
-//	bool continueCalculate = true;
-//	estimatedPlayerPos = myPlayer->GetPlayerPosistion();
-//	for (int i = 0; i < 60; i++)
-//	{
-//		nextVelocity = D3DXVECTOR2(0, 0);
-//		nextVelocity += vOffsetDirection;
-//		for (int x = 0; x < mapTileAmount; x++)
-//		{
-//			if (CollisionManager::CheckCollision(myPlayer->setCalculateCollision(estimatedPlayerPos), mapTileList[x]->getCollisionRect()) || estimatedPlayerPos.y > 700)
-//			{
-//				continueCalculate = false;
-//				break;
-//			}
-//		}
-//
-//		if (continueCalculate)
-//		{
-//			estimatedPlayerPos += nextVelocity;
-//			if (i % 5 == 0)
-//			{
-//				trajectSprite->Begin(D3DXSPRITE_ALPHABLEND);
-//				trajectSprite->Draw(trajectDotTex, &dotCuttingRect, &trajDotCenter, &D3DXVECTOR3(estimatedPlayerPos.x, estimatedPlayerPos.y, 0.0f), D3DCOLOR_XRGB(255, 255, 255));
-//				trajectSprite->End();
-//			}
-//
-//		}
-//		else
-//		{
-//			estimatedIndex = i;
-//			break;
-//		}
-//		estimatedIndex ++;
-//	}
-//	//Decide how many time loop 
-//	return estimatedIndex;
-//
-//}
 
 void Scene1::ChangePlayerState(int playerStateIndex)
 {
@@ -257,6 +166,12 @@ void Scene1::Release()
 
 	backTexture->Release();
 	backTexture = NULL;
+
+	for (int i = 0; i < mapTileList.size(); i++)
+	{
+		delete mapTileList[i];
+		mapTileList[i] = NULL;
+	}
 
 	//enemyTex->Release();
 	//enemyTex = NULL;
