@@ -197,34 +197,34 @@ void PlayerController::ReceiveInput()
 		}
 	}
 	
-	if (myInput->AcceptKeyDown(DIK_P))
-	{
-		myInput->prev_KeyState[DIK_P] = 1;
-		//std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
-	}
-	else if (myInput->prev_KeyState[DIK_P] == 1)
-	{
-		myInput->prev_KeyState[DIK_P] = 0;
-		tempPlayerStateIndex++;
-		if (tempPlayerStateIndex > 3)
-			tempPlayerStateIndex = 0;
-		if (tempPlayerStateIndex == 0)
-		{
-			ChangePlayerState(groundState, 0.0f, -10, -170);
-			std::cout << "Swtiching to ground state" << std::endl;
-		}
-		else if (tempPlayerStateIndex == 1)
-		{
-			ChangePlayerState(wallState, 4.7f, -10, -170);
-			std::cout << "Swtiching to wall state left" << std::endl;
-		}
-		else
-		{
-			ChangePlayerState(wallState, 1.5f, 80, -80);
-			std::cout << "Swtiching to wall state right" << std::endl;
-		}
+	//if (myInput->AcceptKeyDown(DIK_P))
+	//{
+	//	myInput->prev_KeyState[DIK_P] = 1;
+	//	//std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
+	//}
+	//else if (myInput->prev_KeyState[DIK_P] == 1)
+	//{
+	//	myInput->prev_KeyState[DIK_P] = 0;
+	//	tempPlayerStateIndex++;
+	//	if (tempPlayerStateIndex > 3)
+	//		tempPlayerStateIndex = 0;
+	//	if (tempPlayerStateIndex == 0)
+	//	{
+	//		ChangePlayerState(groundState, 0.0f, -10, -170);
+	//		std::cout << "Swtiching to ground state" << std::endl;
+	//	}
+	//	else if (tempPlayerStateIndex == 1)
+	//	{
+	//		ChangePlayerState(wallState, 4.7f, -10, -170);
+	//		std::cout << "Swtiching to wall state left" << std::endl;
+	//	}
+	//	else
+	//	{
+	//		ChangePlayerState(wallState, 1.5f, 80, -80);
+	//		std::cout << "Swtiching to wall state right" << std::endl;
+	//	}
 
-	}
+	//}
 	//if (myInput->AcceptKeyDown(DIK_W))
 	//{
 	//	myInput->prev_KeyState[DIK_W] = 1;

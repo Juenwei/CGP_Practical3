@@ -6,6 +6,8 @@
 #include"GameStateManager.h"
 #include"PlayerController.h"
 #include"mapTile.h"
+#include"bullet.h"
+#include"bulletPoolManager.h"
 #include<vector>
 
 class PlayerController;
@@ -19,10 +21,19 @@ private:
 
 	PlayerController *myPlayer;
 	std::vector<MapTile*>mapTileList;
+	std::vector <Bullet*> inUsingBulletList;
+	
+	//Bullet
+	BulletPoolManager *myPoolManager;
+	//Bullet *myBullet;
+	
 	int mapTileAmount;
 
+	LPDIRECT3DTEXTURE9 bulletTexture;
+	LPD3DXSPRITE bulletSprite;
 	LPDIRECT3DTEXTURE9 backTexture, texture1, trajectDotTex;// enemyTex;
 	LPD3DXSPRITE backSprite , trajectSprite;
+	LPD3DXLINE bulletColliderline;
 	RECT spriteRect, pointerRect , dotCuttingRect;
 
 	D3DXVECTOR2 trans, spriteCentre;
