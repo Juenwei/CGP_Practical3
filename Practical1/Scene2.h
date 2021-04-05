@@ -18,7 +18,7 @@ public:
 	void Update();
 	void FixedUpdate();
 	void Draw();
-	void Release();
+	void SceneRelease();
 	void RenewInput();
 };
 

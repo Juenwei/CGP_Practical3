@@ -4,15 +4,18 @@ GameStateManager *GameStateManager::instance = 0;
 
 GameStateManager::GameStateManager()
 {
+	MainMenu *myMainMenu = new MainMenu();
 	Scene1 *scene1 = new Scene1();
-	scene1->Init();
 	Scene2 *scene2 = new Scene2();
-	scene2->Init();
 
+	gameStateList.push_back(myMainMenu);
 	gameStateList.push_back(scene1);
 	gameStateList.push_back(scene2);
 
-	currentGameState = scene1;
+
+	currentGameState = myMainMenu;
+	//currentGameState = scene1;
+	currentGameState->Init();
 	myTimer = new(JuenTimer);
 	myTimer->Init(60);
 
@@ -50,7 +53,9 @@ void GameStateManager ::ReleaseInstance()
 
 void GameStateManager::ChangeGameState(int index)
 {
+	//currentGameState = gameStateList[index];
 	currentGameState = gameStateList[index];
+	currentGameState->Init();
 }
 
 void GameStateManager::Update()

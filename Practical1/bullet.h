@@ -2,6 +2,7 @@
 #include"JuenGraphics.h"
 #include"JuenWindow.h"
 #include"PlayerController.h"
+#include"Enemy.h"
 #include"CollisionManager.h"
 
 class Bullet
@@ -10,6 +11,7 @@ private:
 	JuenGraphics* myGraphics;
 	JuenInput *myInput;
 	PlayerController* myPlayer;
+	Enemy* myEnemy;
 
 	//Sprite setting
 	LPDIRECT3DTEXTURE9 bulletTexture;
@@ -29,6 +31,9 @@ private:
 	RECT oriColliderRect, bulletColliderRect;
 	D3DXVECTOR2 bulletPointArray[5];
 	LPD3DXLINE bulletColliderline;
+	
+	bool shootByPlayer;
+	bool shootByEnemy;
 
 public:
 	//Bullet Status
@@ -37,19 +42,19 @@ public:
 	Bullet();
 	~Bullet();
 
-	void BulletStart(LPDIRECT3DTEXTURE9 bulletTexture);
+	void BulletStart(LPDIRECT3DTEXTURE9 bulletTexture, RECT bulletSpriteRect, float bulletSpeed);
 	void BulletUpdate();
 	void BulletRender(LPD3DXSPRITE bulletSprite, LPD3DXLINE bulletColliderline);
 	void BulletRelease();
 	void BulletHide();
 
 	void calNorDirection(D3DXVECTOR2 fromP, D3DXVECTOR2 toP);
-	void setBulletToPlayer(D3DXVECTOR2 playerPos);
+	void setBulletToObject(D3DXVECTOR2 objectPos, D3DXVECTOR2 targetPos, bool shootByPlayer);
 
 	//Collision method
 	//RECT getCalculateCollision();
 	//RECT setCalculateCollision(D3DXVECTOR2 pos);
-	//void bulletCollision();
+	void CollideWithTarget();
 
 
 };

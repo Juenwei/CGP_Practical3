@@ -40,7 +40,7 @@ void Scene2::FixedUpdate()
 void Scene2::Draw() {
 
 }
-void Scene2::Release() {
+void Scene2::SceneRelease() {
 	
 }
 

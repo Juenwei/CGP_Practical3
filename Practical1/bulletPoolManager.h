@@ -9,12 +9,7 @@
 
 class BulletPoolManager
 {
-	/*-GetPoolInstance, ReleasePoolInsatance(Singetlon)
-		1. Fill method
-		2. Get bullet from pool method(PULL) << CheckForBulletSize
-		3. Send back to pool method(PUSH)
-		4. Release pool*/
-
+	
 private:
 	static BulletPoolManager* instance;
 	JuenGraphics* myGraphics;

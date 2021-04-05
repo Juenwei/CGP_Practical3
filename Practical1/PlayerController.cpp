@@ -6,7 +6,7 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 {
 	myGraphics = myGraphics->GetGraphicsInstance();
 	myInput = myInput->GetInputInstance();
-
+	playerHealth = 100;
 	//Ground State 
 	pStateType[groundState].colliderRect[0].top = 0;
 	pStateType[groundState].colliderRect[0].left = 0;
@@ -31,15 +31,28 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 
 	//Set Current states
 	currentPStatus = groundState;
+	//playerHealth = 100;
 
 	//Sprite & Animation
 	playerTexture = NULL;
 	playerSprite = NULL;
+	healthFont = NULL;
 	characterCurrentFrame = 0;
 	characterSize.x = size.x;
 	characterSize.y = size.y;
 	scaleFactor.x = scale.x;
 	scaleFactor.y = scale.y;
+
+	//UI & TEXT
+	healthTextRect.left = 16;
+	healthTextRect.top = 8;
+	healthTextRect.right = 0;
+	healthTextRect.bottom = 0;
+	playerHealthUIRect.left = 0;
+	playerHealthUIRect.top = 88;
+	playerHealthUIRect.right = 128;
+	playerHealthUIRect.bottom = 128;
+
 	characterCentre = D3DXVECTOR3(size.x / 2, size.y / 4, 0.0f);//X : 16 , Y : 8
 	playerFaceDirX = 1;
 	animationTimer = 0;
@@ -61,7 +74,8 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 	//Movement
 	prev_PlayerVelocity = D3DXVECTOR2(0, 0);
 	totalVelocity = D3DXVECTOR2(0, 0);
-	playerPosValue = D3DXVECTOR2(pos.x, pos.y);
+	initialPos = D3DXVECTOR2(pos.x, pos.y);
+	playerPosValue = initialPos;
 	this->speed = speed;
 
 	//State
@@ -70,6 +84,8 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 	isPlayerFalling = true;
 	isPlayerCollided = false;
 	isShowingTrajectDot = false;
+	isPlayHitAnimation = false;
+	canPlayerShoot = true;
 
 	//Collider
 	for (int i = 0; i < 5; i++)
@@ -87,6 +103,10 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 	oriSizeRect = pStateType[currentPStatus].colliderRect[0];
 	oriSizeOuterRect2 = pStateType[currentPStatus].colliderRect[1];
 	outerColliderRect2Center = D3DXVECTOR3(characterCentre.x + 3, characterCentre.y + 2.0f, 0.0f);
+
+	//Timer
+	shootTimeElasped = 0.0f;
+	shootTimeDuration = 0.4f;
 
 }
 
@@ -118,15 +138,16 @@ void PlayerController::ReleasePlayerInstance()
 
 void PlayerController::PlayerStart()
 {
+	//Reset State
 	D3DXCreateSprite(myGraphics->d3dDevice, &playerSprite);
 	D3DXCreateSprite(myGraphics->d3dDevice, &trajectSprite);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slime.png", &playerTexture);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slimeTraject.png", &trajectDotTex);
 	D3DXCreateLine(myGraphics->d3dDevice, &playerLine);
-	/*spriteCutRect.left = 0;
-	spriteCutRect.top = 32;
-	spriteCutRect.right = spriteCutRect.left + characterSize.x;
-	spriteCutRect.bottom = spriteCutRect.top + characterSize.y;*/
+	D3DXCreateFont(myGraphics->d3dDevice, 20, 0, 0, 1, false,
+		DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE, "Arial", &healthFont);
+	
 }
 
 void PlayerController::ReceiveInput()
@@ -197,54 +218,6 @@ void PlayerController::ReceiveInput()
 		}
 	}
 	
-	//if (myInput->AcceptKeyDown(DIK_P))
-	//{
-	//	myInput->prev_KeyState[DIK_P] = 1;
-	//	//std::cout << "Pos : (" << posValue.x << " , " << posValue.y << " ) " << std::endl;
-	//}
-	//else if (myInput->prev_KeyState[DIK_P] == 1)
-	//{
-	//	myInput->prev_KeyState[DIK_P] = 0;
-	//	tempPlayerStateIndex++;
-	//	if (tempPlayerStateIndex > 3)
-	//		tempPlayerStateIndex = 0;
-	//	if (tempPlayerStateIndex == 0)
-	//	{
-	//		ChangePlayerState(groundState, 0.0f, -10, -170);
-	//		std::cout << "Swtiching to ground state" << std::endl;
-	//	}
-	//	else if (tempPlayerStateIndex == 1)
-	//	{
-	//		ChangePlayerState(wallState, 4.7f, -10, -170);
-	//		std::cout << "Swtiching to wall state left" << std::endl;
-	//	}
-	//	else
-	//	{
-	//		ChangePlayerState(wallState, 1.5f, 80, -80);
-	//		std::cout << "Swtiching to wall state right" << std::endl;
-	//	}
-
-	//}
-	//if (myInput->AcceptKeyDown(DIK_W))
-	//{
-	//	myInput->prev_KeyState[DIK_W] = 1;
-	//}
-	//else if (myInput->prev_KeyState[DIK_W] == 1)
-	//{
-	//	myInput->prev_KeyState[DIK_W] = 0;
-	//	rotation += 0.1f;
-	//	std::cout << "Current Rotation : " << rotation << std::endl;
-	//}
-	//if (myInput->AcceptKeyDown(DIK_S))
-	//{
-	//	myInput->prev_KeyState[DIK_S] = 1;
-	//}
-	//else if (myInput->prev_KeyState[DIK_S] == 1)
-	//{
-	//	myInput->prev_KeyState[DIK_S] = 0;
-	//	rotation -= 0.1f;
-	//	std::cout << "Current Rotation : " << rotation << std::endl;
-	//}
 
 	if (myInput->AcceptButtonDown(1))
 	{
@@ -275,13 +248,13 @@ void PlayerController::PlayerMovement()
 {
 	//std::cout << " Is player move : " << isMoveKeyPressed << std::endl;
 	//std::cout << " Is player Collided : " << isPlayerCollided<< std::endl;
-	CollisionManager::setCollisionBox(playerPointArray, setCalculatePlayerCollision());
+	CollisionManager::setCollisionBox(playerPointArray, getPlayerCollision());
 	CollisionManager::setCollisionBox(playerPointArray2, colliderSizeRect2);
 	for (int i = 0; i < sceneInstance->getSizeOfMapTileList(); i++)
 	{
 		RECT tempMapRect = sceneInstance->getMapTilePointer(i)->getCollisionRect();
 
-		if (CollisionManager::CheckCollision(setCalculatePlayerCollision(), tempMapRect))
+		if (CollisionManager::CheckCollision(getPlayerCollision(), tempMapRect))
 		{
 			//Collided
 			//Calculate Player
@@ -326,6 +299,10 @@ void PlayerController::PlayerMovement()
 	if (isMoveKeyPressed&&isPlayerCollided)
 	{
 		playerMoveVelocity = inputAxis * speed;
+		if (abs(playerMoveVelocity.x) > 100)
+		{
+			playerMoveVelocity.x = (playerMoveVelocity.x / abs(playerMoveVelocity.x)) * 100;
+		}
 	}
 	else
 	{
@@ -333,9 +310,9 @@ void PlayerController::PlayerMovement()
 	}
 	
 	//Speed Clamping
-	if (abs(totalVelocity.x) > 100)
+	if (abs(totalVelocity.x) > 300)
 	{
-		totalVelocity.x = (totalVelocity.x / abs(totalVelocity.x)) * 100;
+		totalVelocity.x = (totalVelocity.x / abs(totalVelocity.x)) * 300;
 	}
 	
 	playerPosValue += (totalVelocity + playerMoveVelocity )/ 60.0f;
@@ -343,7 +320,7 @@ void PlayerController::PlayerMovement()
 	//Clamp for map boundary
 	if (playerPosValue.y <= 900)
 	{
-		totalVelocity.y += falling().y;
+		totalVelocity.y += ApplyGravity().y;
 	}
 	else
 	{
@@ -357,23 +334,29 @@ void PlayerController::PlayerMovement()
 	}
 
 
-	scaling = D3DXVECTOR2(scaleFactor.x*playerFaceDirX, scaleFactor.y);
+	//scaling = D3DXVECTOR2(scaleFactor.x*playerFaceDirX, scaleFactor.y);
 
-	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, NULL, rotation, &playerPosValue);
+	//D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, NULL, rotation, &playerPosValue);
 }
 
 void PlayerController::PlayerRender() 
 {
 	playerSprite->Begin(D3DXSPRITE_ALPHABLEND);
+	scaling = D3DXVECTOR2(scaleFactor.x*playerFaceDirX, scaleFactor.y);
+	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, NULL, rotation, &playerPosValue);
 	playerSprite->SetTransform(&mat);
 	playerSprite->Draw(playerTexture, &spriteCutRect, &characterCentre, NULL, D3DCOLOR_XRGB(255, 255, 255));
-	
+
+	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &D3DXVECTOR2(2.0f, 2.0f), NULL, NULL, &D3DXVECTOR2(0.0f, 0.0f));
+	playerSprite->SetTransform(&mat);
+	playerSprite->Draw(healthUITex, &playerHealthUIRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
+	std::string healthString = "Health : " + std::to_string(playerHealth);
+	healthFont->DrawText(playerSprite, healthString.c_str() ,-1, &healthTextRect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
+
 	playerSprite->End();
+
 	CollisionManager::drawColliderBox(playerLine, playerPointArray,5);
 	CollisionManager::drawColliderBox(playerLine, playerPointArray2,5);
-
-	//CollisionManager::calculateSideOfCollision(pStateType[currentPStatus].colliderSidePoint, colliderSizeRect);
-	//CollisionManager::drawColliderBox(playerLine, pStateType[currentPStatus].colliderSidePoint, 4);
 	if (isShowingTrajectDot)
 	{
 		trajectSprite->Begin(D3DXSPRITE_ALPHABLEND);
@@ -386,10 +369,10 @@ void PlayerController::PlayerRender()
 			tempPosistion += (tempVelocity / 60.0f);
 			tempVelocity.y += 10;
 			//Speed Clamping
-			if (abs(tempVelocity.x) > 100)
+			if (abs(tempVelocity.x) > 300)
 			{
 				//MIN(MAX)
-				tempVelocity.x = (tempVelocity.x / abs(tempVelocity.x)) * 100;
+				tempVelocity.x = (tempVelocity.x / abs(tempVelocity.x)) * 300;
 			}
 			if (i % 5 == 0)
 			{
@@ -407,27 +390,83 @@ void PlayerController::PlayerRender()
 void PlayerController::PlayerAnimation()
 {
 	animationTimer += 1 / 60.0f;
-	if (animationTimer >= animationDuration)
-	{
-		animationTimer -= animationDuration;
-		characterCurrentFrame++;
-		characterCurrentFrame %= 5;
-	}
-	
-	//Update animation
-	spriteCutRect.left = characterSize.x*characterCurrentFrame;
-	spriteCutRect.top = 32;
-	spriteCutRect.right = spriteCutRect.left + characterSize.x;
-	spriteCutRect.bottom = 64;
 
-	//std::cout << "CF : " << characterCurrentFrame << std::endl;
-	//std::cout << "RECT X : " << characterRect.left << " , " << characterRect.right << std::endl;
-	//std::cout << "RECT Y TOP : " << characterRect.top << " , BOTTOM : " << characterRect.bottom << std::endl;
+	if (myInput->AcceptKeyDown(DIK_RIGHT) || myInput->AcceptKeyDown(DIK_LEFT)|| myInput->AcceptKeyDown(DIK_UP) || myInput->AcceptKeyDown(DIK_DOWN))
+	{
+		//Walk
+		if (animationTimer >= animationDuration)
+		{
+			animationTimer -= animationDuration;
+			characterCurrentFrame++;
+			characterCurrentFrame %= 5;
+		}
+		spriteCutRect.left = characterSize.x * characterCurrentFrame;
+		spriteCutRect.top = 32;
+		spriteCutRect.right = spriteCutRect.left + characterSize.x;
+		spriteCutRect.bottom = 64;
+	}
+	else if (!isPlayerCollided)
+	{
+		//JUMP
+		if (animationTimer >= animationDuration)
+		{
+			animationTimer -= animationDuration;
+		}
+		spriteCutRect.left = 96;
+		spriteCutRect.top = 64;
+		spriteCutRect.right = spriteCutRect.left + characterSize.x;
+		spriteCutRect.bottom = 96;
+	}
+	else if (myInput->AcceptKeyDown(DIK_D))
+	{
+		//Dead //Play one time only
+		if (animationTimer >= animationDuration)
+		{
+			animationTimer -= animationDuration;
+			characterCurrentFrame++;
+			characterCurrentFrame %= 6;
+		}
+		spriteCutRect.left = characterSize.x * characterCurrentFrame;
+		spriteCutRect.top = 128;
+		spriteCutRect.right = spriteCutRect.left + characterSize.x;
+		spriteCutRect.bottom = 160;
+	}
+	else if (myInput->AcceptKeyDown(DIK_H))
+	{
+		//hit , Play one time only
+		if (animationTimer >= animationDuration)
+		{
+			animationTimer -= animationDuration;
+			characterCurrentFrame++;
+			characterCurrentFrame %= 2;
+		}
+		spriteCutRect.left = characterSize.x * characterCurrentFrame;
+		spriteCutRect.top = 160;
+		spriteCutRect.right = spriteCutRect.left + characterSize.x;
+		spriteCutRect.bottom = 192;
+	}
+	else
+	{
+		//Idle
+		if (animationTimer >= animationDuration)
+		{
+			animationTimer -= animationDuration;
+			characterCurrentFrame++;
+			characterCurrentFrame %= 4;
+		}
+		spriteCutRect.left = characterSize.x * characterCurrentFrame;
+		spriteCutRect.top = 96;
+		spriteCutRect.right = spriteCutRect.left + characterSize.x;
+		spriteCutRect.bottom = 128;
+	}
 }
 
 void PlayerController::PlayerRelease()
 {
 	CollisionManager::releaseColliderBox(playerLine);
+
+	healthFont->Release();
+	healthFont = NULL;
 
 	playerTexture->Release();
 	playerTexture = NULL;
@@ -440,6 +479,36 @@ void PlayerController::PlayerRelease()
 
 	playerSprite->Release();
 	playerSprite = NULL;
+}
+
+void PlayerController::PlayerTimer()
+{
+	shootTimeElasped += (1 / 60.0f);
+	
+	if (shootTimeElasped >= shootTimeDuration)
+	{
+		canPlayerShoot = true;
+	}
+}
+
+void PlayerController::ResetShootTimer()
+{
+	canPlayerShoot = false;
+	shootTimeElasped = 0.0f;
+}
+
+void PlayerController::ResetPlayerValue()
+{
+	isMoveKeyPressed = false;
+	isReleasedKey = false;
+	isPlayerFalling = true;
+	isPlayerCollided = false;
+	isShowingTrajectDot = false;
+	isPlayHitAnimation = false;
+	canPlayerShoot = true;
+	currentPStatus = groundState;
+	playerHealth = 100;
+	playerPosValue = initialPos;
 }
 
 void PlayerController::calNorDirection(D3DXVECTOR2 fromP, D3DXVECTOR2 toP)
@@ -458,7 +527,7 @@ bool PlayerController::trajectoryAngleClamp()
 {
 	float angle;
 	angle = atan2(normDirectV.y, normDirectV.x) / 3.142 * 180;
-	std::cout << "Angle : " << angle << std::endl;
+	//std::cout << "Angle : " << angle << std::endl;
 	if (currentPStatus == groundState)
 	{
 		if (angle <= minAngleClamp && angle >= maxAngleClamp)
@@ -478,7 +547,6 @@ bool PlayerController::trajectoryAngleClamp()
 		{
 			if (abs(angle) > minAngleClamp)
 			{
-				std::cout << "Angle for Left" << std::endl;
 				return true;
 			}
 			else
@@ -490,7 +558,6 @@ bool PlayerController::trajectoryAngleClamp()
 		{
 			if (abs(angle) < minAngleClamp)
 			{
-				std::cout << "Angle for Right" << std::endl;
 				return true;
 			}
 			else
@@ -502,25 +569,7 @@ bool PlayerController::trajectoryAngleClamp()
 
 }
 
-//D3DXVECTOR2 PlayerController::PlayJump()
-//{
-//	D3DXVECTOR2 nextVelocity = D3DXVECTOR2(0, 0);
-//	if (!trajecList.empty())
-//	{
-//		//std::cout << "Play Jumps !! "<< std::endl;
-//		//setIsApplyGravity(true);
-//		nextVelocity = trajecList.front();
-//		trajecList.pop_front();
-//		prev_PlayerVelocity = nextVelocity;
-//		if (trajecList.empty())
-//		{
-//			ResolveCollision();
-//		}
-//	}
-//	return nextVelocity;
-//}
-
-D3DXVECTOR2 PlayerController::falling()
+D3DXVECTOR2 PlayerController::ApplyGravity()
 {
 	D3DXVECTOR2 fallVector = D3DXVECTOR2(0.0f, 0.0f);
 	if (!isPlayerCollided)
@@ -544,21 +593,14 @@ void PlayerController::playerJumpVer2()
 		playerFaceDirX = -1;
 	rotation = 0.0f;
 	totalVelocity = normDirectV * 500;
-	std::cout << "JUMP VEL : " << " ( " << normDirectV.x << " , " << normDirectV.y << " ) " << std::endl;
-
 }
 
 
 void PlayerController::ResolveCollision(RECT colliderRect)
 {
 	isMoveKeyPressed = false;
-	
-	//Reset velocity , and resolve player pos to the y axis of collider 
 	totalVelocity = D3DXVECTOR2(0.0f, 0.0f);
 	playerPosValue -= (prev_PlayerVelocity/100);
-	//playerPosValue.x += (prev_PlayerVelocity.x/ 100);
-
-	std::cout << "Resolving (" << prev_PlayerVelocity.x << " , " << prev_PlayerVelocity.y << " ) " << std::endl;
 }
 
 void PlayerController::ChangePlayerState(PlayerStatus targetState, float rotationRad, int minAngle, int maxAngle)
@@ -571,6 +613,11 @@ void PlayerController::ChangePlayerState(PlayerStatus targetState, float rotatio
 	maxAngleClamp = maxAngle;
 }
 
+void PlayerController::SetPlayerUI(LPDIRECT3DTEXTURE9 UITexture)
+{
+	healthUITex = UITexture;
+}
+
 D3DXVECTOR2 PlayerController::GetPlayerPosistion()
 {
 	return playerPosValue;
@@ -581,11 +628,26 @@ D3DXVECTOR3 PlayerController::GetPlayerCentre()
 	return characterCentre;
 }
 
-RECT PlayerController::setCalculatePlayerCollision()
+void PlayerController::gettingDamage(int damage)
+{
+	playerHealth -= damage;
+}
+
+RECT PlayerController::getPlayerCollision()
 {
 	colliderSizeRect = CollisionManager::CalculateCollision(playerPosValue,
 		oriSizeRect, D3DXVECTOR2(characterCentre.x, characterCentre.y));
 	return colliderSizeRect;
+}
+
+bool PlayerController::getPlayerShooting()
+{
+	return canPlayerShoot;
+}
+
+int PlayerController::getPlayerHealth()
+{
+	return playerHealth;
 }
 
 void PlayerController::setIsApplyGravity(bool boolValue)

@@ -8,18 +8,14 @@ class MapTile
 {
 private:
 	JuenGraphics *myGraphics;
-	//CollisionManager *mapCollider;
-	
 	enum MapTileType
 	{
 		verticalType,
 		horizontalType
 	};
 	std::vector<D3DXVECTOR2> generatePointList;
-	LPD3DXSPRITE tileSprite, dotSprite;
-	LPDIRECT3DTEXTURE9 tileTexture, dotTexture;
-	LPD3DXLINE mapLine;
-	//Preset first then use dynamic array with pointer
+	LPD3DXSPRITE tileSprite;
+	LPDIRECT3DTEXTURE9 tileTexture;
 	float rotation;
 	int amountOfTile;
 	D3DXVECTOR2 mapColliderTrans, mapTileScale, dotTrans;
@@ -29,8 +25,11 @@ private:
 	RECT mapTileCuttingRect; 
 	//Collider Rect
 	RECT oriColliderRect , mapColliderRect;
-	//Collider Line , predefined first , one collider have 5 array value
-	D3DXVECTOR2 mapTilePointArray[5];
+	//Collider Line
+	//LPD3DXSPRITE dotSprite;
+	//LPDIRECT3DTEXTURE9 dotTexture;
+	//LPD3DXLINE mapLine;
+	//D3DXVECTOR2 mapTilePointArray[5];
 
 
 public:
@@ -44,6 +43,7 @@ public:
 	void mapRelease();
 	void mapCollision();
 	void settingGeneratePoint(int amountGenerate,D3DXVECTOR2 offsetRange, D3DXVECTOR2 initialPoint);
+
 	//Getter & Setter
 	RECT getCollisionRect();
 	D3DXVECTOR2 GetMapPosistion();

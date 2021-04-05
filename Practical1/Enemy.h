@@ -3,6 +3,7 @@
 #include"JuenWindow.h"
 #include"JuenInput.h"
 #include"PlayerController.h"
+#include"CollisionManager.h"
 #include<list>
 
 class Enemy
@@ -12,16 +13,18 @@ private:
 	JuenGraphics *myGraphics;
 	JuenInput*myInput;
 
-	//enum EnemyStatus
-	//{
-	//	
-	//}currentEnemyStatus;
+	enum EnemyStatus
+	{
+		shootingState,
+		MoveShootingState
+	};
+	int currentEnemyStatus;
 
 	//Basic Sprite Setting
-	LPDIRECT3DTEXTURE9 enemyTexture;
+	LPDIRECT3DTEXTURE9 enemyTexture,enemyUITexture;
 	LPD3DXSPRITE enemySprite;
-	RECT enemySpriteCutRect;
-	D3DXVECTOR2 scaleFactor, scaling;
+	RECT enemySpriteCutRect, enemyHealthUIRect;
+	D3DXVECTOR2 scaleFactor, enemySize;
 	D3DXVECTOR3 enemyCentre;
 	float rotation;
 
@@ -35,8 +38,21 @@ private:
 	float animationDuration, animationTimer;
 
 	//Collider Setting
-	RECT oriSizeRect, colliderSizeRect;
-	D3DXVECTOR2 enemyPointArray[5];
+	RECT oriSizeRect, enemyColliderSizeRect;
+
+	//Collider box
+	//LPD3DXLINE EnemyColliderBox;
+	//D3DXVECTOR2 enemyPointArray[5];
+
+	//Timer & State
+	float moveTimeElapsed;// , movingStateDuration;
+	D3DXVECTOR2 originPoint, targetPosition[4];
+	int currentTargetPosIndex, targetDirection, amountLoop;
+
+	//Health and damage
+	int enemyHealth;
+	LPD3DXFONT healthFont;
+	RECT healthTextRect;
 
 	//Constructor
 	Enemy();
@@ -45,9 +61,13 @@ private:
 public:
 	int enemyFaceDirX;
 	D3DXVECTOR2 normDirectV;
-
+	struct EStatus {
+		float shootingCooldown, stateTimer;
+	};
 	//Condition & State
 	bool isEnemyCollided;
+	bool isMoveActivate;
+	EStatus enemyStatus[2];
 
 	//Singletlon method
 	static Enemy* GetEnemyInstance();
@@ -55,21 +75,23 @@ public:
 
 	//Basic method
 	void EnemyStart();
-	void EnemyMovement();
+	void EnemyUpdate();
 	void EnemyRender();
 	void EnemyAnimation();
 	void EnemyRelease();
-
-	//Trajectory
-	void calNorDirection(D3DXVECTOR2 fromP, D3DXVECTOR2 toP);
+	void ResetEnemyValue();
 
 	//collision method
-	void ResolveCollision(RECT colliderRect);
+	RECT getEnemyColliderRect();
+	void BulletCollide(float damage);
 
 	//ChangeState method
 	void ChangeEnemyState();
 
 	//Getter & Setter
 	D3DXVECTOR2 GetEnemyPosistion();
+	int getCurrentEnemyState();
+	int getEnemyHealth();
+	void SetEnemyUI(LPDIRECT3DTEXTURE9 UITexture);
 };
 
