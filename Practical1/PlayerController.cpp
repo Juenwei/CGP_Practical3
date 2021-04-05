@@ -88,12 +88,12 @@ PlayerController::PlayerController(D3DXVECTOR2 pos, D3DXVECTOR2 scale, D3DXVECTO
 	canPlayerShoot = true;
 
 	//Collider
-	for (int i = 0; i < 5; i++)
+	/*for (int i = 0; i < 5; i++)
 	{
 		playerPointArray[i] = D3DXVECTOR2(0, 0);
 		playerPointArray2[i] = D3DXVECTOR2(0, 0);
 
-	}
+	}*/
 
 	for (int i = 0; i < 4; i++)
 	{

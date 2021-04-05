@@ -4,6 +4,7 @@
 #include"JuenInput.h"
 #include"GameStateManager.h"
 #include"GameState.h"
+#include"Button.h"
 #include<fmod.hpp>
 
 class MainMenu :public GameState
@@ -11,11 +12,16 @@ class MainMenu :public GameState
 private:
 	JuenInput* myInput;
 	JuenGraphics* myGraphics;
-	LPDIRECT3DTEXTURE9 menuTexture, gameTitleTexture;
+	JuenWindow*myWindow;
+	Button *startButton, *tutorialButton, *quitButton, *closeTutorialButton;
+	LPDIRECT3DTEXTURE9 menuTexture, gameTitleTexture, tutorialTexture;
 	LPD3DXSPRITE menuSprite;
-	RECT menuRect,titleUIRect;
+	
+	RECT menuRect, titleUIRect, tutorialTexRect;
 	D3DXMATRIX MenuMat;
 
+	int redIndex, greenIndex, blueIndex;
+	int colorDirection;
 	LPD3DXFONT font;
 	RECT textRect;
 	FMOD::System* system;
@@ -23,6 +29,13 @@ private:
 	FMOD::Channel* channel;
 
 public:
+	//Mouse
+	D3DXVECTOR2 mouseCenter, mouseArray[5];
+	RECT oriMouseSizeRect, mouseRect;
+	LPD3DXLINE mouseColliderLine;
+
+	bool isShowTutorial;
+
 	MainMenu();
 	~MainMenu();
 

@@ -15,8 +15,6 @@ private:
 	
 
 public:
-	static int keyPressed;
-	bool switchPressed,isWindowed,isCursorShow;
 	HWND g_hWnd;
 	MSG msg;
 	JuenWindow();
@@ -30,17 +28,10 @@ public:
 
 	static JuenWindow* GetWindowInstance();
 	static void ReleaseWindowInstance();
-	void ClientResize(HWND hWnd, int nWidth, int nHeight);
 
-	void SetSwitchValue(bool switchValue);
-	bool GetSwitchValue();
 
-	void SetCurrentWindow(bool newWinValue);
-	bool GetCurrentWindow();
-	//void setCurrentWindow(bool newWinValue);
+	//void ChangeCursor();
 
-	void SetShowCursor(bool newCursorValue);
-	bool GetShowCursor();
-	void ChangeCursor();
+	void quitProgram();
 };
 

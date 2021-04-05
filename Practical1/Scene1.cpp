@@ -10,7 +10,7 @@ Scene1::Scene1()
 	myPlayer->setScenePointer(this);
 	myPoolManager->GetPoolManagerInstance();
 	myEnemy = myEnemy->GetEnemyInstance();
-
+	
 	FMOD::System* system = NULL;
 
 	//Delete once use new 
@@ -60,6 +60,7 @@ Scene1::Scene1()
 	angleWithinRange = false;
 	vOffsetDirection = D3DXVECTOR2(0, 0);
 
+	//Bullet
 	pBulletRect.left = 4;
 	pBulletRect.top = 0;
 	pBulletRect.right = 36;
@@ -68,6 +69,8 @@ Scene1::Scene1()
 	eBulletRect.left = 76;
 	eBulletRect.bottom = 32;
 	eBulletRect.right = 108;
+
+	//UI
 	endGameScreenRect.left = 0;
 	endGameScreenRect.top = 0;
 	endGameScreenRect.right = 720;
@@ -79,6 +82,7 @@ Scene1::Scene1()
 	//Enemy
 	currentEnemyShootTime = 0.0f;
 	currentEnemyStateTime = 0.0f;
+	
 }
 
 Scene1::~Scene1()
@@ -140,6 +144,8 @@ void Scene1::Init()
 	pointerRect.top = 0;
 	pointerRect.right = 32;
 	pointerRect.bottom = 32;
+
+	
 }
 
 void Scene1::Update()
@@ -189,6 +195,8 @@ void Scene1::Update()
 			break;
 		}
 	}
+
+	
 }
 
 void Scene1::FixedUpdate()
@@ -205,7 +213,8 @@ void Scene1::FixedUpdate()
 	EnemyStateMachine();
 	myEnemy->EnemyUpdate();
 	myEnemy->EnemyAnimation();
-
+	//myButton->buttonCollision();
+	
 }
 
 
@@ -234,7 +243,7 @@ void Scene1::RenewInput()
 		
 
 	}
-
+	
 	
 }
 
@@ -422,6 +431,8 @@ void Scene1::SceneRelease()
 		delete mapTileList[i];
 		mapTileList[i] = NULL;
 	}
+
+	
 
 	bulletTexture->Release();
 	bulletTexture = NULL;

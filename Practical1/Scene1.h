@@ -26,6 +26,8 @@ private:
 	std::vector <Bullet*> inUsingBulletList;
 	Enemy *myEnemy;
 	
+	
+
 	//Bullet
 	BulletPoolManager *myPoolManager;
 	//Bullet *myBullet;
@@ -66,6 +68,9 @@ public:
 	//Enemy
 	float currentEnemyStateTime;
 	float currentEnemyShootTime;
+
+	
+	
 
 	void Init();
 	void Update();
