@@ -59,7 +59,6 @@ private:
 	~Enemy();
 
 public:
-	int enemyFaceDirX;
 	D3DXVECTOR2 normDirectV;
 	struct EStatus {
 		float shootingCooldown, stateTimer;

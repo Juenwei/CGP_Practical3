@@ -14,10 +14,10 @@ private:
 	JuenGraphics* myGraphics;
 	JuenWindow*myWindow;
 	Button *startButton, *tutorialButton, *quitButton, *closeTutorialButton;
-	LPDIRECT3DTEXTURE9 menuTexture, gameTitleTexture, tutorialTexture;
+	LPDIRECT3DTEXTURE9 menuTexture, gameTitleTexture, tutorialTexture,mousePointerTex;
 	LPD3DXSPRITE menuSprite;
 	
-	RECT menuRect, titleUIRect, tutorialTexRect;
+	RECT menuRect, titleUIRect, tutorialTexRect, mouseCursorRect;
 	D3DXMATRIX MenuMat;
 
 	int redIndex, greenIndex, blueIndex;
@@ -30,9 +30,9 @@ private:
 
 public:
 	//Mouse
-	D3DXVECTOR2 mouseCenter, mouseArray[5];
+	D3DXVECTOR2 mouseCenter;// , mouseArray[5];
 	RECT oriMouseSizeRect, mouseRect;
-	LPD3DXLINE mouseColliderLine;
+	//LPD3DXLINE mouseColliderLine;
 
 	bool isShowTutorial;
 

@@ -26,32 +26,22 @@ private:
 	std::vector <Bullet*> inUsingBulletList;
 	Enemy *myEnemy;
 	
-	
-
 	//Bullet
 	BulletPoolManager *myPoolManager;
-	//Bullet *myBullet;
-	
-	int mapTileAmount;
-
-	LPDIRECT3DTEXTURE9 bulletTexture;
-	LPD3DXSPRITE bulletSprite;
-	LPDIRECT3DTEXTURE9 backTexture, pointerTexture, trajectDotTex, winScreenTex, loseScreenTex, UItexture;
-	LPD3DXSPRITE backSprite, trajectSprite;
-	LPD3DXLINE bulletColliderline;
-	RECT backGroundRect, pointerRect, trajectDotCuttingRect, pBulletRect, eBulletRect,endGameScreenRect, endScreenTextRect;
+	LPDIRECT3DTEXTURE9 backTexture, trajectDotTex, bulletTexture, winScreenTex, loseScreenTex, UItexture;
+	LPD3DXSPRITE backSprite, bulletSprite, trajectSprite;
+	//LPD3DXLINE bulletColliderline;
+	RECT backGroundRect,mouseCursorRect, pBulletRect, eBulletRect,endGameScreenRect, endScreenTextRect;
 	LPD3DXFONT endGameFont;
 	D3DXVECTOR2 trans, spriteCentre;
 	D3DXVECTOR2 BGScaling;
 	D3DXMATRIX cursorMat,backGMat;
 
-	D3DXVECTOR2 nextVelocity, vOffsetDirection, gravity;
+	D3DXVECTOR2 vOffsetDirection, gravity;
 	D3DXVECTOR2 estimatedPlayerPos;
 
 	D3DXVECTOR3 trajDotCenter;
 	bool angleWithinRange;
-
-	int loopIndex=0;
 	bool isGamePaused;
 	bool isVictory, isGameOver;
 
@@ -81,7 +71,7 @@ public:
 	void ResetScene();
 
 
-	//Enemy function //Set the timer inside function , then shoot , you may refernece the shooting style inside Enemy class.
+	//Enemy function
 	void EnemyStateMachine();
 	void BasicShootingStyle();
 	void TripleShootingStyle();

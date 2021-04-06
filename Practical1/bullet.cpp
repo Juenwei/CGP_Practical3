@@ -62,7 +62,7 @@ void Bullet::BulletUpdate()
 	D3DXMatrixTransformation2D(&bulletMat, NULL, 0.0, &bulletSize, NULL, NULL, &bulletPosition);
 }
 
-void Bullet::BulletRender(LPD3DXSPRITE bulletSprite, LPD3DXLINE bulletColliderline)
+void Bullet::BulletRender(LPD3DXSPRITE bulletSprite)
 {
 	if (isBulletUsing == false)
 	{
@@ -72,7 +72,7 @@ void Bullet::BulletRender(LPD3DXSPRITE bulletSprite, LPD3DXLINE bulletColliderli
 	bulletSprite->SetTransform(&bulletMat);
 	bulletSprite->Draw(bulletTexture, &bulletSpriteRect, &bulletCentre, NULL, D3DCOLOR_XRGB(255, 255, 255));
 	bulletSprite->End();
-	CollisionManager::drawColliderBox(bulletColliderline, bulletPointArray, 5);
+	//CollisionManager::drawColliderBox(bulletColliderline, bulletPointArray, 5);
 
 }
 

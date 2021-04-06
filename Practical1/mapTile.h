@@ -41,7 +41,6 @@ public:
 	void mapUpdate();
 	void mapRender();
 	void mapRelease();
-	void mapCollision();
 	void settingGeneratePoint(int amountGenerate,D3DXVECTOR2 offsetRange, D3DXVECTOR2 initialPoint);
 
 	//Getter & Setter

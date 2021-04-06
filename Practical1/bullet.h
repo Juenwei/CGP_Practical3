@@ -44,7 +44,7 @@ public:
 
 	void BulletStart(LPDIRECT3DTEXTURE9 bulletTexture, RECT bulletSpriteRect, float bulletSpeed);
 	void BulletUpdate();
-	void BulletRender(LPD3DXSPRITE bulletSprite, LPD3DXLINE bulletColliderline);
+	void BulletRender(LPD3DXSPRITE bulletSprite);
 	void BulletRelease();
 	void BulletHide();
 

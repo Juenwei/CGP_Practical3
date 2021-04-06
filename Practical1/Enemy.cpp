@@ -170,6 +170,7 @@ void Enemy::EnemyRelease()
 void Enemy::ResetEnemyValue()
 {
 	enemyHealth = 100;
+	amountLoop == 0;
 	enemyPosValue = D3DXVECTOR2(500.0f, 100.0f);
 	originPoint = D3DXVECTOR2(500.0f, 100.0f);
 	isMoveActivate = true;
@@ -195,12 +196,12 @@ void Enemy::ChangeEnemyState()
 	{
 		currentEnemyStatus = MoveShootingState;
 		isMoveActivate = true;
-		//Do reset and init at here
+		amountLoop = 0;
 	}
 	else
 	{
 		currentEnemyStatus = shootingState;
-		//enemyPosValue = originPoint;
+		amountLoop = 0;
 	}
 }
 

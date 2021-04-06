@@ -79,11 +79,6 @@ void MapTile::mapRender()
 
 void MapTile::mapRelease()
 {
-	//CollisionManager::releaseColliderBox(mapLine);
-	//dotTexture->Release();
-	//dotTexture = NULL;
-	//dotSprite->Release();
-	//dotSprite = NULL;
 
 	tileTexture->Release();
 	tileTexture = NULL;
@@ -91,11 +86,6 @@ void MapTile::mapRelease()
 	tileSprite->Release();
 	tileSprite = NULL;
 
-}
-
-void MapTile::mapCollision()
-{
-	
 }
 
 void MapTile::settingGeneratePoint(int amountGenerate, D3DXVECTOR2 offsetRange, D3DXVECTOR2 initialPoint)

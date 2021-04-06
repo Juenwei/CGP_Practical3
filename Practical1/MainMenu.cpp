@@ -12,6 +12,7 @@ MainMenu::MainMenu()
 	menuTexture = NULL;
 	tutorialTexture = NULL;
 	menuSprite = NULL;
+	mousePointerTex = NULL;
 
 	titleUIRect.left = 0;
 	titleUIRect.top = 43;
@@ -36,17 +37,22 @@ MainMenu::MainMenu()
 	FMOD::System* system = NULL;
 	
 	//Mouse
-	mouseColliderLine = NULL;
+	//mouseColliderLine = NULL;
 	mouseCenter = D3DXVECTOR2(16.0f, 16.0f);
-	for (int i = 0; i < 5; i++)
+	/*for (int i = 0; i < 5; i++)
 	{
 		mouseArray[i] = D3DXVECTOR2(0, 0);
-	}
+	}*/
 	oriMouseSizeRect.top = 0;
 	oriMouseSizeRect.left = 0;
 	oriMouseSizeRect.bottom = 32;
 	oriMouseSizeRect.right = 32;
 	isShowTutorial = false;
+
+	mouseCursorRect.top = 0;
+	mouseCursorRect.left = 0;
+	mouseCursorRect.bottom = 32;
+	mouseCursorRect.right = 32;
 }
 
 MainMenu::~MainMenu()
@@ -59,8 +65,9 @@ void MainMenu::Init()
 	D3DXCreateSprite(myGraphics->d3dDevice, &menuSprite);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/menu.jpg", &menuTexture);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/yellowUI.png", &gameTitleTexture);
+	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slimeTraject.png", &mousePointerTex);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/tutorial.png", &tutorialTexture);
-	D3DXCreateLine(myGraphics->d3dDevice, &mouseColliderLine);
+	//D3DXCreateLine(myGraphics->d3dDevice, &mouseColliderLine);
 	D3DXCreateFont(myGraphics->d3dDevice, 50, 0, 0, 1, false,
 		DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, DEFAULT_QUALITY,
 		DEFAULT_PITCH | FF_DONTCARE, "Arial", &font);
@@ -73,7 +80,7 @@ void MainMenu::Init()
 	system->playSound(sound, NULL, false, &channel);// set paused to false
 	sound->setMode(FMOD_LOOP_NORMAL);
 	//Set back to 0.3f
-	channel->setVolume(0.3f);
+	channel->setVolume(0.5f);
 	colorDirection = 1;
 	startButton->buttonStart("START");
 	tutorialButton->buttonStart("TUTORIAL");
@@ -137,7 +144,7 @@ void MainMenu::Update()
 		isShowTutorial = false;
 	}
 	mouseRect = CollisionManager::CalculateCollision(myInput->getMousePosition(), oriMouseSizeRect, mouseCenter);
-	CollisionManager::setCollisionBox(mouseArray, mouseRect);
+	//CollisionManager::setCollisionBox(mouseArray, mouseRect);
 	if (!isShowTutorial)
 	{
 		startButton->buttonCollision(mouseRect);
@@ -206,7 +213,12 @@ void MainMenu::Draw()
 		tutorialButton->buttonRender();
 		quitButton->buttonRender();
 	}
-	CollisionManager::drawColliderBox(mouseColliderLine, mouseArray, 5);
+	//CollisionManager::drawColliderBox(mouseColliderLine, mouseArray, 5);
+	menuSprite->Begin(D3DXSPRITE_ALPHABLEND);
+	D3DXMatrixTransformation2D(&MenuMat, NULL, 0.0, &D3DXVECTOR2(1.0f, 1.0f), NULL, NULL, &D3DXVECTOR2(myInput->mousePos.x, myInput->mousePos.y));
+	menuSprite->SetTransform(&MenuMat);
+	menuSprite->Draw(mousePointerTex, &mouseCursorRect, &D3DXVECTOR3(mouseCenter.x, mouseCenter.y, 0.0f), NULL, D3DCOLOR_XRGB(255, 255, 255));
+	menuSprite->End();
 }
 
 void MainMenu::SceneRelease()
@@ -214,11 +226,10 @@ void MainMenu::SceneRelease()
 	font->Release();
 	font = NULL;
 
-	mouseColliderLine->Release();
-	mouseColliderLine = NULL;
+	//CollisionManager::releaseColliderBox(mouseColliderLine);
 
-	CollisionManager::releaseColliderBox(mouseColliderLine);
-
+	mousePointerTex->Release();
+	mousePointerTex = NULL;
 
 	startButton->buttonRelease();
 	delete startButton;

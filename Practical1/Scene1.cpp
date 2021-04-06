@@ -31,17 +31,13 @@ Scene1::Scene1()
 	mapTileList.push_back(maptile2);
 	mapTileList.push_back(maptile3);
 	mapTileList.push_back(maptile4);
-	mapTileAmount = mapTileList.size();
-
-
 
 	backTexture = NULL;
-	pointerTexture = NULL;
 	backSprite = NULL;
 	trajectSprite = NULL;
 	bulletTexture = NULL;
 	bulletSprite = NULL;
-	bulletColliderline = NULL;
+	//bulletColliderline = NULL;
 	winScreenTex = NULL;
 	loseScreenTex = NULL;
 	endGameFont = NULL;
@@ -53,10 +49,10 @@ Scene1::Scene1()
 
 	gravity = D3DXVECTOR2(0.0f, 10.0f);
 	trajDotCenter = D3DXVECTOR3(16.0f, 16.0f, 0.0f);
-	trajectDotCuttingRect.top = 0;
-	trajectDotCuttingRect.left = 0;
-	trajectDotCuttingRect.bottom = 32;
-	trajectDotCuttingRect.right = 32;
+	mouseCursorRect.top = 0;
+	mouseCursorRect.left = 0;
+	mouseCursorRect.bottom = 32;
+	mouseCursorRect.right = 32;
 	angleWithinRange = false;
 	vOffsetDirection = D3DXVECTOR2(0, 0);
 
@@ -88,6 +84,7 @@ Scene1::Scene1()
 Scene1::~Scene1()
 {
 	//Destructor
+	SceneRelease();
 }
 
 void Scene1::Init()
@@ -110,7 +107,7 @@ void Scene1::Init()
 	bulletChannel->setVolume(0.0f);
 
 	myPlayer->PlayerStart();
-	for (int i = 0; i < mapTileAmount; i++)
+	for (int i = 0; i < mapTileList.size(); i++)
 	{
 		mapTileList[i]->mapStart();
 	}
@@ -120,7 +117,6 @@ void Scene1::Init()
 	D3DXCreateSprite(myGraphics->d3dDevice, &trajectSprite);
 	D3DXCreateSprite(myGraphics->d3dDevice, &bulletSprite);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/sciback.jpg", &backTexture);
-	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/pointer.png", &pointerTexture);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slimeTraject.png", &trajectDotTex);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/bullet.png", &bulletTexture);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/victory.jpg", &winScreenTex);
@@ -130,7 +126,7 @@ void Scene1::Init()
 		DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, DEFAULT_QUALITY,
 		DEFAULT_PITCH | FF_DONTCARE, "Arial", &endGameFont);
 
-	D3DXCreateLine(myGraphics->d3dDevice, &bulletColliderline);
+	//D3DXCreateLine(myGraphics->d3dDevice, &bulletColliderline);
 
 	myPlayer->SetPlayerUI(UItexture);
 	myEnemy->SetEnemyUI(UItexture);
@@ -139,12 +135,6 @@ void Scene1::Init()
 	backGroundRect.top = 0;
 	backGroundRect.right = 512;
 	backGroundRect.bottom = 256;
-
-	pointerRect.left = 0;
-	pointerRect.top = 0;
-	pointerRect.right = 32;
-	pointerRect.bottom = 32;
-
 	
 }
 
@@ -390,7 +380,7 @@ void Scene1::Draw()
 	backSprite->SetTransform(&backGMat);
 	backSprite->Draw(backTexture, &backGroundRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
 	backSprite->End();
-	for (int i = 0; i < mapTileAmount; i++)
+	for (int i = 0; i < mapTileList.size(); i++)
 	{
 		mapTileList[i]->mapRender();
 	}
@@ -399,20 +389,33 @@ void Scene1::Draw()
 	backSprite->Begin(D3DXSPRITE_ALPHABLEND);
 	D3DXMatrixTransformation2D(&cursorMat, NULL, 0.0, &D3DXVECTOR2(1.0f, 1.0f), NULL, NULL, &D3DXVECTOR2(myInput->mousePos.x, myInput->mousePos.y));
 	backSprite->SetTransform(&cursorMat);
-	backSprite->Draw(trajectDotTex, &pointerRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
+	backSprite->Draw(trajectDotTex, &mouseCursorRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
 	backSprite->End();
 	for (int i = 0; i < inUsingBulletList.size(); i++)
 	{
 		//Implement Load the tex and sprite by using pass parameter
-		inUsingBulletList[i]->BulletRender(bulletSprite,bulletColliderline);
+		inUsingBulletList[i]->BulletRender(bulletSprite);
 	}
 
 }
 
 void Scene1::SceneRelease()
 {
-	endGameFont->Release();
-	endGameFont = NULL;
+	myEnemy->EnemyRelease();
+	myEnemy->ReleaseEnemyInstance();
+
+	myPlayer->PlayerRelease();
+	myPlayer->ReleasePlayerInstance();
+
+	myPoolManager->ClearPool();
+	myPoolManager->ReleasePoolManagerInstance();
+
+	for (int i = 0; i < mapTileList.size(); i++)
+	{
+		mapTileList[i]->mapRelease();
+		delete mapTileList[i];
+		mapTileList[i] = NULL;
+	}
 
 	winScreenTex->Release();
 	winScreenTex = NULL;
@@ -426,33 +429,17 @@ void Scene1::SceneRelease()
 	backTexture->Release();
 	backTexture = NULL;
 
-	for (int i = 0; i < mapTileList.size(); i++)
-	{
-		delete mapTileList[i];
-		mapTileList[i] = NULL;
-	}
-
-	
-
 	bulletTexture->Release();
 	bulletTexture = NULL;
 
 	bulletSprite->Release();
 	bulletSprite = NULL;
 
-	CollisionManager::releaseColliderBox(bulletColliderline);
-
-	myPoolManager->ClearPool();
-	myPoolManager->ReleasePoolManagerInstance();
-
-	myEnemy->EnemyRelease();
-	myEnemy->ReleaseEnemyInstance();
-
-	pointerTexture->Release();
-	pointerTexture = NULL;
-
 	UItexture->Release();
 	UItexture = NULL;
+
+	endGameFont->Release();
+	endGameFont = NULL;
 
 	trajectSprite->Release();
 	trajectSprite = NULL;
@@ -460,22 +447,15 @@ void Scene1::SceneRelease()
 	backSprite->Release();
 	backSprite = NULL;
 
-	for (int i = 0; i < mapTileAmount; i++)
-	{
-		mapTileList[i]->mapRelease();
-	}
-
-	myPlayer->PlayerRelease();
-	myPlayer->ReleasePlayerInstance();
-
-	system->release();
-	system = NULL;
-
 	bgSound->release();
 	bgSound = NULL;
 
 	bulletSound->release();
 	bulletSound = NULL;
+
+	system->release();
+	system = NULL;
+
 }
 
 

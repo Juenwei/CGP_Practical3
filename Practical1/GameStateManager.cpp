@@ -14,7 +14,6 @@ GameStateManager::GameStateManager()
 
 
 	currentGameState = myMainMenu;
-	//currentGameState = scene1;
 	currentGameState->Init();
 	myTimer = new(JuenTimer);
 	myTimer->Init(60);
@@ -53,7 +52,6 @@ void GameStateManager ::ReleaseInstance()
 
 void GameStateManager::ChangeGameState(int index)
 {
-	//currentGameState = gameStateList[index];
 	currentGameState = gameStateList[index];
 	currentGameState->Init();
 }
