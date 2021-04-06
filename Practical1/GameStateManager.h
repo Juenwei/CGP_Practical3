@@ -7,8 +7,6 @@
 #include"MainMenu.h"
 #include<vector>
 
-
-
 class GameStateManager
 {
 private:
@@ -26,7 +24,7 @@ public:
 		SCENE_1 = 1,
 	};
 	static GameStateManager*GetInstance();
-	void ReleaseInstance();
+	static void ReleaseInstance();
 	void ChangeGameState(int index);
 	void Update();
 	void Draw();

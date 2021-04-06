@@ -43,6 +43,7 @@ int main()
 	}
 	myWindow->CleanUpWindow();
 
+	myGameStateManager->ReleaseInstance();
 	
 	myInput->ReleaseInput();
 

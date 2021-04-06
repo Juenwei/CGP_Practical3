@@ -24,7 +24,7 @@ GameStateManager::~GameStateManager()
 {
 	delete myTimer;
 	myTimer = NULL;
-	for (int i = 0; i < sizeof(gameStateList); i++)
+	for (int i = 0; i < gameStateList.size(); i++)
 	{
 		delete gameStateList[i];
 		gameStateList[i] = NULL;
