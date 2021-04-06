@@ -6,11 +6,11 @@ GameStateManager::GameStateManager()
 {
 	MainMenu *myMainMenu = new MainMenu();
 	Scene1 *scene1 = new Scene1();
-	Scene2 *scene2 = new Scene2();
+	//Scene2 *scene2 = new Scene2();
 
 	gameStateList.push_back(myMainMenu);
 	gameStateList.push_back(scene1);
-	gameStateList.push_back(scene2);
+	//gameStateList.push_back(scene2);
 
 
 	currentGameState = myMainMenu;

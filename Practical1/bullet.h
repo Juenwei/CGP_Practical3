@@ -29,8 +29,8 @@ private:
 
 	//Collider Setting
 	RECT oriColliderRect, bulletColliderRect;
-	D3DXVECTOR2 bulletPointArray[5];
-	LPD3DXLINE bulletColliderline;
+	//D3DXVECTOR2 bulletPointArray[5];
+	//LPD3DXLINE bulletColliderline;
 	
 	bool shootByPlayer;
 	bool shootByEnemy;

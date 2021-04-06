@@ -13,11 +13,11 @@ Bullet::Bullet()
 	myInput = myInput->GetInputInstance();
 	bulletTexture = NULL;
 	bulletSprite = NULL;
-	bulletColliderline = NULL;
+	/*bulletColliderline = NULL;
 	for (int i = 0; i < 5; i++)
 	{
 		bulletPointArray[i] = D3DXVECTOR2(0, 0);
-	}
+	}*/
 	bulletSize = D3DXVECTOR2(1.0f, 1.0f);
 	bulletSpriteRect.left = 4;
 	bulletSpriteRect.top = 0;
@@ -56,7 +56,7 @@ void Bullet::BulletUpdate()
 		BulletHide();
 	}
 	CollideWithTarget();
-	CollisionManager::setCollisionBox(bulletPointArray, bulletColliderRect);
+	//CollisionManager::setCollisionBox(bulletPointArray, bulletColliderRect);
 	bulletVelocity = normDirectV * bulletSpeed;
 	bulletPosition += bulletVelocity/60;
 	D3DXMatrixTransformation2D(&bulletMat, NULL, 0.0, &bulletSize, NULL, NULL, &bulletPosition);
