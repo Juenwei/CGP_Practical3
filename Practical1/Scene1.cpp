@@ -67,11 +67,11 @@ Scene1::Scene1()
 	eBulletRect.right = 108;
 
 	//UI
-	endGameScreenRect.left = 0;
+	endGameScreenRect.left = 120;
 	endGameScreenRect.top = 0;
-	endGameScreenRect.right = 720;
-	endGameScreenRect.bottom = 405;
-	endScreenTextRect.left = 450;
+	endGameScreenRect.right = 1280;
+	endGameScreenRect.bottom = 700;
+	endScreenTextRect.left = 200;
 	endScreenTextRect.top = 550;
 	endScreenTextRect.right = 150;
 	endScreenTextRect.bottom = 125;
@@ -119,12 +119,12 @@ void Scene1::Init()
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/sciback.jpg", &backTexture);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/slimeTraject.png", &trajectDotTex);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/bullet.png", &bulletTexture);
-	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/victory.jpg", &winScreenTex);
-	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/gameover.jpg", &loseScreenTex);
+	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/victory1.jpg", &winScreenTex);
+	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/gameover1.jpg", &loseScreenTex);
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/orangeUI.png", &UItexture);
 	D3DXCreateFont(myGraphics->d3dDevice, 50, 0, 0, 1, false,
 		DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, DEFAULT_QUALITY,
-		DEFAULT_PITCH | FF_DONTCARE, "Arial", &endGameFont);
+		DEFAULT_PITCH | FF_DONTCARE, "Courier New", &endGameFont);
 
 	//D3DXCreateLine(myGraphics->d3dDevice, &bulletColliderline);
 
@@ -371,6 +371,8 @@ void Scene1::Draw()
 			backSprite->SetTransform(&backGMat);
 			backSprite->Draw(winScreenTex, &endGameScreenRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
 		}
+		D3DXMatrixTransformation2D(&backGMat, NULL, 0.0, NULL, NULL, NULL, &D3DXVECTOR2(0.0f, 0.0f));
+		backSprite->SetTransform(&backGMat);
 		endGameFont->DrawText(backSprite, "Press Enter to Back to Menu", -1, &endScreenTextRect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
 		backSprite->End();
 		return;

@@ -24,7 +24,7 @@ MainMenu::MainMenu()
 	menuRect.right = 1920;
 	menuRect.bottom = 1080;
 
-	textRect.left = 100;
+	textRect.left =0;
 	textRect.top = 550;
 	textRect.right = 150;
 	textRect.bottom = 125;
@@ -70,7 +70,7 @@ void MainMenu::Init()
 	//D3DXCreateLine(myGraphics->d3dDevice, &mouseColliderLine);
 	D3DXCreateFont(myGraphics->d3dDevice, 50, 0, 0, 1, false,
 		DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, DEFAULT_QUALITY,
-		DEFAULT_PITCH | FF_DONTCARE, "Arial", &font);
+		DEFAULT_PITCH | FF_DONTCARE, "Courier New", &font);
 
 	FMOD::System_Create(&system);
 	system->init(512, FMOD_INIT_NORMAL, 0);
@@ -200,12 +200,14 @@ void MainMenu::Draw()
 		D3DXMatrixTransformation2D(&MenuMat, NULL, 0.0, NULL, NULL, NULL, &D3DXVECTOR2(0.0f, 0.0f));
 		menuSprite->SetTransform(&MenuMat);
 		menuSprite->Draw(menuTexture, &menuRect, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
-		font->DrawText(menuSprite, "Press Enter to Play , Press T for tutorial", -1, &textRect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
-
+		font->DrawText(menuSprite, "Press Enter to Play", -1, &textRect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
+		D3DXMatrixTransformation2D(&MenuMat, NULL, 0.0, NULL, NULL, NULL, &D3DXVECTOR2(0.0f, 100.0f));
+		menuSprite->SetTransform(&MenuMat);
+		font->DrawText(menuSprite, "Press T for tutorial", -1, &textRect, DT_NOCLIP, D3DCOLOR_XRGB(255, 255, 255));
 		D3DXMatrixTransformation2D(&MenuMat, NULL, 0.0, &D3DXVECTOR2(2.5f, 2.0f), NULL, NULL, &D3DXVECTOR2(100.0f, 20.0f));
 		menuSprite->SetTransform(&MenuMat);
 		menuSprite->Draw(gameTitleTexture, NULL, NULL, NULL, D3DCOLOR_XRGB(255, 255, 255));
-		D3DXMatrixTransformation2D(&MenuMat, NULL, 0.0, &D3DXVECTOR2(2.0f, 2.0f), NULL, NULL, &D3DXVECTOR2(220.0f, 100.0f));
+		D3DXMatrixTransformation2D(&MenuMat, NULL, 0.0, &D3DXVECTOR2(2.0f, 2.0f), NULL, NULL, &D3DXVECTOR2(200.0f, 100.0f));
 		menuSprite->SetTransform(&MenuMat);
 		font->DrawText(menuSprite, "RPS Duel", -1, NULL, DT_NOCLIP, D3DCOLOR_XRGB(redIndex, greenIndex, blueIndex));
 		menuSprite->End();

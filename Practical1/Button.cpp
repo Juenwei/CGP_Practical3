@@ -6,8 +6,8 @@ Button::Button(D3DXVECTOR2 pos, D3DXVECTOR2 buttonSize)
 	myInput = myInput->GetInputInstance();
 	buttonTexture = NULL;
 	buttonSprite = NULL;
-	textRect.left = -60;
-	textRect.top =-20;
+	textRect.left = -90;
+	textRect.top =-18;
 	textRect.right = 0;
 	textRect.bottom = 0;
 	buttonCuttingRect.left = 0.0f, buttonCuttingRect.top = 18.0f, buttonCuttingRect.right = 256.0f, buttonCuttingRect.bottom = 109.0f;
@@ -30,7 +30,7 @@ void Button::buttonStart(std::string buttonMsg)
 	D3DXCreateTextureFromFile(myGraphics->d3dDevice, "Img/buttonUI.png", &buttonTexture);
 	D3DXCreateFont(myGraphics->d3dDevice, 40, 0, 0, 1, false,
 		DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, DEFAULT_QUALITY,
-		DEFAULT_PITCH | FF_DONTCARE, "Arial", &font);
+		DEFAULT_PITCH | FF_DONTCARE, "Courier New", &font);
 	buttonColliderRect = CollisionManager::CalculateCollision(buttonPos, oriColliderRect, D3DXVECTOR2(buttonCentre.x, buttonCentre.y));
 	this->buttonMsg = buttonMsg;
 }
