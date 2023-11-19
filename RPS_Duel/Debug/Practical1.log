@@ -1,0 +1,10 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (CGP_Practical2.vcxproj, Practical1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Scene1.cpp
+  c:\program files (x86)\microsoft directx sdk (june 2010)\include\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+c:\users\forge-15 i5\source\repos\cgp_practical3\practical1\scene1.cpp(110): warning C4018: '<': signed/unsigned mismatch
+c:\users\forge-15 i5\source\repos\cgp_practical3\practical1\scene1.cpp(176): warning C4018: '<': signed/unsigned mismatch
+c:\users\forge-15 i5\source\repos\cgp_practical3\practical1\scene1.cpp(243): warning C4018: '<': signed/unsigned mismatch
+c:\users\forge-15 i5\source\repos\cgp_practical3\practical1\scene1.cpp(385): warning C4018: '<': signed/unsigned mismatch
+c:\users\forge-15 i5\source\repos\cgp_practical3\practical1\scene1.cpp(396): warning C4018: '<': signed/unsigned mismatch
+c:\users\forge-15 i5\source\repos\cgp_practical3\practical1\scene1.cpp(415): warning C4018: '<': signed/unsigned mismatch
+  Practical1.vcxproj -> C:\Users\FORGE-15 I5\source\repos\CGP_Practical3\Debug\CGP_Practical3.exe
